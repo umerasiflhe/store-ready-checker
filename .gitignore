@@ -1,0 +1,63 @@
+# --- Dependencies ---
+node_modules/
+
+# --- Build output ---
+dist/
+*.tsbuildinfo
+.vite/
+# vite-plugin-pwa development service worker
+apps/web/dev-dist/
+
+# --- Test output ---
+coverage/
+playwright-report/
+test-results/
+blob-report/
+/playwright/.cache/
+# Large fixtures created at test time (e.g. the 500 MB performance IPA); never commit
+fixtures/generated/
+
+# --- Swift / Xcode ---
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# --- Real app builds: never commit them (synthetic fixtures are the only exception) ---
+*.ipa
+*.aab
+*.apk
+*.xcarchive/
+*.dSYM/
+*.dSYM.zip
+!fixtures/files/**/*.ipa
+!fixtures/files/**/*.aab
+!fixtures/files/**/*.apk
+
+# --- Demo recording intermediates (final GIFs in docs/media/ are committed) ---
+docs/media/raw/
+
+# --- Secrets and local environment ---
+.env
+.env.*
+!.env.example
+
+# --- Claude Code personal files (the shared .claude/ config IS committed) ---
+.claude/settings.local.json
+.claude/worktrees/
+CLAUDE.local.md
+
+# --- Logs and caches ---
+*.log
+npm-debug.log*
+.eslintcache
+.cache/
+
+# --- OS and editors ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp

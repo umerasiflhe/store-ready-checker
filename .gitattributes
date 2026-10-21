@@ -1,0 +1,9 @@
+* text=auto eol=lf
+fixtures/files/** binary
+*.gif binary
+*.png binary
+*.ico binary
+docs/RULES.md linguist-generated=true
+packages/core/src/gen/** linguist-generated=true
+cli/Sources/StoreReadyCore/Generated/** linguist-generated=true
+cli/Sources/StoreReadyCore/Resources/** linguist-generated=true
