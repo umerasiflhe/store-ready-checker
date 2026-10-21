@@ -7,7 +7,11 @@ Check an iOS or Android build against the current App Store Connect and Google P
 
 > **Status: in development.** The web checker will be live at <https://umerasiflhe.github.io/store-ready-checker/> after Milestone 5. Progress is in [CHANGELOG.md](CHANGELOG.md).
 >
-> **Works today:** repo scaffolding, tooling, git hooks and CI linting (Milestone 0).
+> **Works today (Milestone 0 — bootstrap):** repo scaffolding and tooling (npm workspaces, strict
+> TypeScript, ESLint/Prettier/markdownlint, lefthook git hooks with a self-test), a Swift CLI
+> package skeleton (`storeready --version`), every v1 rule recorded as data with sources and dates
+> (table above, details in [docs/RULES.md](docs/RULES.md)), and CI's `lint` job. No parsing or
+> rule-checking logic yet — that starts in Milestone 1.
 
 ## What it checks
 
