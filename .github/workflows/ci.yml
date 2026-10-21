@@ -50,7 +50,7 @@ jobs:
       - name: Commitlint
         uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6.2.1
         with:
-          configFile: ./commitlint.config.js
+          configFile: ./commitlint.config.mjs
 
       - name: Check documentation links
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
