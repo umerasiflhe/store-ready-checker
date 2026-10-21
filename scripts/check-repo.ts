@@ -2,6 +2,13 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  formatMarkdown,
+  loadRules,
+  renderDoc,
+  renderTable,
+  replaceReadmeBlock,
+} from './gen-rules-doc.ts';
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 
@@ -157,10 +164,23 @@ function checkReadmeLinks(): void {
   }
 }
 
-function checkRulesBlockFreshness(): void {
-  // scripts/gen-rules-doc.ts (added once rules/rules.json exists) owns this comparison
-  // via its own --check mode; nothing to verify before rules data exists.
+async function checkRulesBlockFreshness(): Promise<void> {
   if (!existsSync(join(repoRoot, 'rules/rules.json'))) return;
+
+  const data = loadRules();
+  const newRulesDoc = await formatMarkdown(renderDoc(data));
+  const currentRulesDoc = readRepoFile('docs/RULES.md');
+  if (currentRulesDoc !== newRulesDoc) {
+    problems.push('docs/RULES.md is stale — run: npm run rules:doc');
+  }
+
+  const currentReadme = readRepoFile('README.md') ?? '';
+  const newReadme = await formatMarkdown(
+    replaceReadmeBlock(currentReadme, renderTable(data.rules)),
+  );
+  if (currentReadme !== newReadme) {
+    problems.push('README.md rules block is stale — run: npm run rules:doc');
+  }
 }
 
 checkRequiredFiles();
@@ -170,7 +190,7 @@ checkNoStrayBinaries();
 checkFileSizes();
 checkNoIgnoredTrackedFiles();
 checkReadmeLinks();
-checkRulesBlockFreshness();
+await checkRulesBlockFreshness();
 
 if (problems.length > 0) {
   console.error('Repo check failed:');

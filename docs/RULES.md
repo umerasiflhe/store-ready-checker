@@ -2,5 +2,274 @@
 
 # Rules
 
-This file is generated from [`rules/rules.json`](../rules/rules.json) once that data exists
-(Milestone 0, commit adding the schemas and v1 rules). Run `npm run rules:doc` to regenerate it.
+Rules version: `2026.10.20`. Every rule is evaluated "as of" a chosen date against its severity timeline below.
+
+| ID              | Platform | Check                                                                                       | In force from |
+| --------------- | -------- | ------------------------------------------------------------------------------------------- | ------------- |
+| `IOS-SDK-001`   | ios      | Built with Xcode 26+ using the iOS 26 SDK                                                   | 2026-04-28    |
+| `IOS-MINOS-001` | ios      | MinimumOSVersion must be at least 13.0                                                      | 2026-09-09    |
+| `IOS-PRIV-001`  | ios      | Required-reason API used without a privacy manifest                                         | 2024-05-01    |
+| `IOS-PRIV-002`  | ios      | Required-reason API category not declared in privacy manifest                               | 2024-05-01    |
+| `IOS-PRIV-003`  | ios      | Privacy manifest is malformed or declares an unknown category/reason code                   | 2024-05-01    |
+| `IOS-PRIV-004`  | ios      | Listed third-party SDK bundled without its own privacy manifest                             | 2024-05-01    |
+| `IOS-INFO-001`  | ios      | Executable is encrypted — API detection is limited                                          | 1970-01-01    |
+| `AND-TSDK-001`  | android  | targetSdkVersion meets the Play requirement for new apps and updates                        | 2026-08-31    |
+| `AND-TSDK-002`  | android  | targetSdkVersion should be at least 35 to stay visible to new users                         | 2026-08-31    |
+| `AND-16K-001`   | android  | 64-bit native libraries must be 16 KB page aligned                                          | 2025-11-01    |
+| `AND-16K-002`   | android  | GNU_RELRO segment must end 16 KB aligned (unless in its own LOAD segment)                   | 2025-11-01    |
+| `AND-16K-003`   | android  | Stored (uncompressed) native libraries must be 16 KB zip-aligned (APK only)                 | 2025-11-01    |
+| `AND-16K-004`   | android  | BundleConfig.pb should request 16 KB alignment when native libs are uncompressed (AAB only) | 2025-11-01    |
+| `AND-64BIT-001` | android  | 32-bit native code must ship alongside a matching 64-bit ABI                                | 2021-08-01    |
+| `AND-INFO-001`  | android  | No 64-bit-relevant native code detected                                                     | 1970-01-01    |
+
+## `IOS-SDK-001` — Built with Xcode 26+ using the iOS 26 SDK
+
+Platform: ios
+
+Severity timeline:
+
+- **error** from 2026-04-28
+
+Sources:
+
+- [Apple — Upcoming requirements](https://developer.apple.com/news/upcoming-requirements/) (retrieved 2026-10-20)
+
+Fix:
+
+- Install Xcode 26 or later
+- Archive again and re-export the IPA
+
+## `IOS-MINOS-001` — MinimumOSVersion must be at least 13.0
+
+Platform: ios
+
+Severity timeline:
+
+- **error** from 2026-09-09
+
+Sources:
+
+- [Apple — Upcoming requirements](https://developer.apple.com/news/upcoming-requirements/) (retrieved 2026-10-20)
+
+Fix:
+
+- Raise the deployment target / MinimumOSVersion to iOS 13.0 or later
+- Archive again and re-export the IPA
+
+## `IOS-PRIV-001` — Required-reason API used without a privacy manifest
+
+Platform: ios · confidence: heuristic
+
+Severity timeline:
+
+- **error** from 2024-05-01
+
+Sources:
+
+- [Apple — Describing use of required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) (retrieved 2026-10-20)
+
+Fix:
+
+- Add a PrivacyInfo.xcprivacy privacy manifest to the bundle
+- Declare the required-reason API category and reason code used
+
+## `IOS-PRIV-002` — Required-reason API category not declared in privacy manifest
+
+Platform: ios · confidence: heuristic
+
+Severity timeline:
+
+- **error** from 2024-05-01
+
+Sources:
+
+- [Apple — Describing use of required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) (retrieved 2026-10-20)
+
+Fix:
+
+- Add an NSPrivacyAccessedAPITypes entry for the detected category
+- Choose the correct NSPrivacyAccessedAPITypeReasons code for how the API is used
+
+## `IOS-PRIV-003` — Privacy manifest is malformed or declares an unknown category/reason code
+
+Platform: ios · confidence: certain
+
+Severity timeline:
+
+- **error** from 2024-05-01
+
+Sources:
+
+- [Apple — Describing use of required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) (retrieved 2026-10-20)
+
+Fix:
+
+- Fix the malformed PrivacyInfo.xcprivacy plist
+- Use only documented NSPrivacyAccessedAPIType and NSPrivacyAccessedAPITypeReasons values
+
+## `IOS-PRIV-004` — Listed third-party SDK bundled without its own privacy manifest
+
+Platform: ios
+
+Severity timeline:
+
+- **warning** from 2024-05-01 — Apple requires this for new apps and for app updates that add the SDK; the tool cannot tell which situation applies, so this is always reported as a warning.
+
+Sources:
+
+- [Apple — Third-party SDK requirements](https://developer.apple.com/support/third-party-SDK-requirements/) (retrieved 2026-10-20)
+
+Fix:
+
+- Update the SDK to a version that ships its own PrivacyInfo.xcprivacy
+- Contact the SDK vendor if no version ships a privacy manifest yet
+
+## `IOS-INFO-001` — Executable is encrypted — API detection is limited
+
+Platform: ios
+
+Severity timeline:
+
+- **info** from 1970-01-01
+
+Sources:
+
+- none (tool-only informational note)
+
+Fix:
+
+- No action needed — this is informational. Re-check with a non-encrypted (locally archived) build for full API detection.
+
+## `AND-TSDK-001` — targetSdkVersion meets the Play requirement for new apps and updates
+
+Platform: android
+
+Severity timeline:
+
+- **error** from 2026-08-31 — An approved extension request can push this deadline to 2026-11-01.
+
+Sources:
+
+- [Google Play — Target API level requirements](https://developer.android.com/google/play/requirements/target-sdk) (retrieved 2026-10-20)
+
+Fix:
+
+- Raise targetSdkVersion to meet the Play requirement for your app's form factor
+- Test thoroughly against the new target SDK before re-uploading
+
+## `AND-TSDK-002` — targetSdkVersion should be at least 35 to stay visible to new users
+
+Platform: android
+
+Severity timeline:
+
+- **warning** from 2026-08-31
+
+Sources:
+
+- [Google Play — Target API level requirements](https://developer.android.com/google/play/requirements/target-sdk) (retrieved 2026-10-20)
+
+Fix:
+
+- Raise targetSdkVersion to at least 35
+
+## `AND-16K-001` — 64-bit native libraries must be 16 KB page aligned
+
+Platform: android
+
+Severity timeline:
+
+- **warning** from 2025-11-01
+- **error** from 2027-02-01
+
+Sources:
+
+- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-20)
+
+Fix:
+
+- Upgrade to AGP 8.5.1+ and NDK r28+
+- Rebuild or update prebuilt .so files and SDKs
+
+## `AND-16K-002` — GNU_RELRO segment must end 16 KB aligned (unless in its own LOAD segment)
+
+Platform: android
+
+Severity timeline:
+
+- **warning** from 2025-11-01
+- **error** from 2027-02-01
+
+Sources:
+
+- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-20)
+
+Fix:
+
+- Upgrade to AGP 8.5.1+ and NDK r28+
+- Rebuild or update prebuilt .so files and SDKs
+
+## `AND-16K-003` — Stored (uncompressed) native libraries must be 16 KB zip-aligned (APK only)
+
+Platform: android
+
+Severity timeline:
+
+- **warning** from 2025-11-01
+- **error** from 2027-02-01
+
+Sources:
+
+- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-20)
+
+Fix:
+
+- Re-run zipalign with -P 16 before signing the APK
+
+## `AND-16K-004` — BundleConfig.pb should request 16 KB alignment when native libs are uncompressed (AAB only)
+
+Platform: android
+
+Severity timeline:
+
+- **warning** from 2025-11-01
+
+Sources:
+
+- [Android — Support 16 KB page sizes (bundletool section)](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-20)
+
+Fix:
+
+- Upgrade bundletool / AGP so the bundle config requests 16 KB alignment
+
+## `AND-64BIT-001` — 32-bit native code must ship alongside a matching 64-bit ABI
+
+Platform: android
+
+Severity timeline:
+
+- **error** from 2021-08-01
+
+Sources:
+
+- [Google Play — 64-bit requirement](https://developer.android.com/google/play/requirements/64-bit) (retrieved 2026-10-20)
+
+Fix:
+
+- Build and ship a matching 64-bit (arm64-v8a / x86_64) native library
+
+## `AND-INFO-001` — No 64-bit-relevant native code detected
+
+Platform: android
+
+Severity timeline:
+
+- **info** from 1970-01-01
+
+Sources:
+
+- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-20)
+
+Fix:
+
+- No action needed — this app has no native code, only 32-bit native code, or declares android:pageSizeCompat.

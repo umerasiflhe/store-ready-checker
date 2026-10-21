@@ -1,0 +1,35 @@
+{
+  "note": "Populated by rules-watch.yml (Milestone 5), which hashes each page's relevant text and opens a rules-change issue on drift. Until that workflow runs, sha256/checkedAt stay null.",
+  "sources": [
+    {
+      "url": "https://developer.apple.com/news/upcoming-requirements/",
+      "sha256": null,
+      "checkedAt": null
+    },
+    {
+      "url": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api",
+      "sha256": null,
+      "checkedAt": null
+    },
+    {
+      "url": "https://developer.apple.com/support/third-party-SDK-requirements/",
+      "sha256": null,
+      "checkedAt": null
+    },
+    {
+      "url": "https://developer.android.com/google/play/requirements/target-sdk",
+      "sha256": null,
+      "checkedAt": null
+    },
+    {
+      "url": "https://developer.android.com/guide/practices/page-sizes",
+      "sha256": null,
+      "checkedAt": null
+    },
+    {
+      "url": "https://developer.android.com/google/play/requirements/64-bit",
+      "sha256": null,
+      "checkedAt": null
+    }
+  ]
+}

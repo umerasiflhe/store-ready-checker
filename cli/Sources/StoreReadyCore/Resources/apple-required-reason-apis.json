@@ -1,0 +1,72 @@
+{
+  "retrieved": "2026-10-20",
+  "verified": false,
+  "source": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api",
+  "note": "Seed data from the brief's Appendix A. The rules-auditor agent must confirm every category, reason code, and symbol against Apple's documentation before v1.0, then set verified to true.",
+  "categories": [
+    {
+      "type": "NSPrivacyAccessedAPICategoryFileTimestamp",
+      "reasonCodes": ["DDA9.1", "C617.1", "3B52.1", "0A2A.1"],
+      "evidence": {
+        "symbols": [
+          "_stat",
+          "_fstat",
+          "_fstatat",
+          "_lstat",
+          "_getattrlist",
+          "_fgetattrlist",
+          "_getattrlistat",
+          "_getattrlistbulk",
+          "_NSFileCreationDate",
+          "_NSFileModificationDate",
+          "_NSURLContentModificationDateKey",
+          "_NSURLCreationDateKey"
+        ],
+        "selectors": []
+      }
+    },
+    {
+      "type": "NSPrivacyAccessedAPICategorySystemBootTime",
+      "reasonCodes": ["35F9.1", "8FFB.1", "3D61.1"],
+      "evidence": {
+        "symbols": ["_mach_absolute_time"],
+        "selectors": ["systemUptime"]
+      }
+    },
+    {
+      "type": "NSPrivacyAccessedAPICategoryDiskSpace",
+      "reasonCodes": ["85F4.1", "E174.1", "7D9E.1", "B728.1"],
+      "evidence": {
+        "symbols": [
+          "_statfs",
+          "_statvfs",
+          "_fstatfs",
+          "_fstatvfs",
+          "_NSFileSystemFreeSize",
+          "_NSFileSystemSize",
+          "_NSURLVolumeAvailableCapacityKey",
+          "_NSURLVolumeAvailableCapacityForImportantUsageKey",
+          "_NSURLVolumeAvailableCapacityForOpportunisticUsageKey",
+          "_NSURLVolumeTotalCapacityKey"
+        ],
+        "selectors": []
+      }
+    },
+    {
+      "type": "NSPrivacyAccessedAPICategoryActiveKeyboards",
+      "reasonCodes": ["3EC4.1", "54BD.1"],
+      "evidence": {
+        "symbols": [],
+        "selectors": ["activeInputModes"]
+      }
+    },
+    {
+      "type": "NSPrivacyAccessedAPICategoryUserDefaults",
+      "reasonCodes": ["CA92.1", "1C8F.1", "C56D.1", "AC6B.1"],
+      "evidence": {
+        "symbols": ["_OBJC_CLASS_$_NSUserDefaults"],
+        "selectors": []
+      }
+    }
+  ]
+}

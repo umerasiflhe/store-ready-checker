@@ -7,7 +7,7 @@
   "ignores": [
     "docs/BUILD_BRIEF.md",
     "node_modules/**",
-    ".build/**",
+    "**/.build/**",
     "coverage/**",
     "playwright-report/**",
     "test-results/**",

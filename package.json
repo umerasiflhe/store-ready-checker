@@ -24,6 +24,8 @@
     "test:e2e": "playwright test -c e2e/playwright.config.ts",
     "test:swift": "swift test --package-path cli",
     "check:repo": "tsx scripts/check-repo.ts",
+    "rules:sync": "tsx scripts/sync-rules.ts",
+    "rules:doc": "tsx scripts/gen-rules-doc.ts",
     "verify": "./scripts/verify.sh",
     "prepare": "lefthook install"
   },
