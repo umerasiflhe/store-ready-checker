@@ -1,0 +1,51 @@
+{
+  "name": "store-ready",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": [
+    "packages/core",
+    "apps/web"
+  ],
+  "scripts": {
+    "lint": "eslint . --max-warnings 0 && npm run lint:swift && npx markdownlint-cli2 && npm run lint:actions && npm run lint:shell",
+    "lint:fix": "eslint . --fix --max-warnings 0",
+    "lint:swift": "bash -c '[ ! -d cli ] || (cd cli && (swift format lint --strict --recursive Sources Tests Package.swift 2>/dev/null || xcrun swift-format lint --strict --recursive Sources Tests Package.swift))'",
+    "lint:actions": "bash -c '[ ! -d .github/workflows ] || actionlint'",
+    "lint:shell": "bash -c 'shopt -s nullglob; files=(scripts/*.sh .claude/hooks/*.sh); [ ${#files[@]} -eq 0 ] || shellcheck \"${files[@]}\"'",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p tsconfig.json --noEmit && npm run typecheck --workspaces --if-present",
+    "test": "npm run test:unit",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts",
+    "test:swift": "swift test --package-path cli",
+    "check:repo": "tsx scripts/check-repo.ts",
+    "verify": "./scripts/verify.sh",
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.5",
+    "@vitest/coverage-v8": "^5.0.5",
+    "@vitest/eslint-plugin": "^1.6.27",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-playwright": "^2.12.1",
+    "lefthook": "^2.2.2",
+    "markdownlint-cli2": "^0.24.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5"
+  }
+}

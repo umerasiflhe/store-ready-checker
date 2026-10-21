@@ -1,0 +1,15 @@
+# The user's source brief: kept verbatim, never reformatted
+docs/BUILD_BRIEF.md
+dist
+coverage
+playwright-report
+test-results
+blob-report
+.build
+packages/core/src/gen
+cli/Sources/StoreReadyCore/Generated
+cli/Sources/StoreReadyCore/Resources
+fixtures/files
+docs/RULES.md
+package-lock.json
+cli/Package.resolved

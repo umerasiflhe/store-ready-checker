@@ -5,7 +5,7 @@ Check an iOS or Android build against the current App Store Connect and Google P
 [![CI](https://github.com/umerasiflhe/store-ready-checker/actions/workflows/ci.yml/badge.svg)](https://github.com/umerasiflhe/store-ready-checker/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> **Status: in development.** The web checker will be live at https://umerasiflhe.github.io/store-ready-checker/ after Milestone 5. Progress is in [CHANGELOG.md](CHANGELOG.md).
+> **Status: in development.** The web checker will be live at <https://umerasiflhe.github.io/store-ready-checker/> after Milestone 5. Progress is in [CHANGELOG.md](CHANGELOG.md).
 >
 > **Works today:** repo scaffolding, tooling, git hooks and CI linting (Milestone 0).
 

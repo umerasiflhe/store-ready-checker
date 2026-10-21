@@ -1,0 +1,70 @@
+# lefthook.yml
+glob_matcher: doublestar
+
+pre-commit:
+  piped: true
+  jobs:
+    - name: fix
+      group:
+        piped: true
+        jobs:
+          - name: eslint-fix
+            glob: '**/*.{ts,mts,cts,js,mjs,cjs}'
+            exclude:
+              - 'packages/core/src/gen/**'
+              - 'fixtures/files/**'
+            run: npx eslint --fix --max-warnings 0 --no-warn-ignored {staged_files}
+            stage_fixed: true
+          - name: prettier
+            glob: '**/*.{ts,mts,cts,js,mjs,cjs,json,md,yml,yaml,css,html}'
+            run: npx prettier --write {staged_files}
+            stage_fixed: true
+          - name: swift-format
+            glob: '**/*.swift'
+            exclude:
+              - 'cli/Sources/StoreReadyCore/Generated/**'
+            run: swift format --in-place {staged_files}
+            stage_fixed: true
+    - name: check
+      group:
+        parallel: true
+        jobs:
+          - name: swift-lint
+            glob: '**/*.swift'
+            exclude:
+              - 'cli/Sources/StoreReadyCore/Generated/**'
+            run: swift format lint --strict {staged_files}
+          - name: markdownlint
+            glob: '**/*.md'
+            run: npx markdownlint-cli2 {staged_files}
+          - name: actionlint
+            glob: '.github/workflows/*.{yml,yaml}'
+            run: actionlint {staged_files}
+            fail_text: 'Needs actionlint: brew install actionlint'
+          - name: shellcheck
+            glob: '**/*.sh'
+            run: shellcheck {staged_files}
+            fail_text: 'Needs shellcheck: brew install shellcheck'
+          - name: typecheck
+            run: npm run typecheck
+          - name: repo-check
+            run: npm run check:repo
+          - name: unit-tests
+            run: npm run test:unit
+          - name: swift-tests
+            glob:
+              - 'cli/**'
+              - 'rules/**'
+              - 'schema/**'
+              - 'fixtures/**'
+            run: swift test --package-path cli
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: npx --no -- commitlint --edit {1}
+
+pre-push:
+  jobs:
+    - name: verify
+      run: ./scripts/verify.sh

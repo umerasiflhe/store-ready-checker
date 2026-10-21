@@ -1,0 +1,17 @@
+{
+  "config": {
+    "default": true,
+    "MD013": false,
+  },
+  "globs": ["**/*.md"],
+  "ignores": [
+    "docs/BUILD_BRIEF.md",
+    "node_modules/**",
+    ".build/**",
+    "coverage/**",
+    "playwright-report/**",
+    "test-results/**",
+    "dist/**",
+    "fixtures/files/**",
+  ],
+}
