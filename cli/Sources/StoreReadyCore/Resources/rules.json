@@ -184,10 +184,7 @@
           "retrieved": "2026-10-20"
         }
       ],
-      "fix": [
-        "Upgrade to AGP 8.5.1+ and NDK r28+",
-        "Rebuild or update prebuilt .so files and SDKs"
-      ]
+      "fix": ["Upgrade to AGP 8.5.1+ and NDK r28+", "Rebuild or update prebuilt .so files and SDKs"]
     },
     {
       "id": "AND-16K-002",
@@ -206,10 +203,7 @@
           "retrieved": "2026-10-20"
         }
       ],
-      "fix": [
-        "Upgrade to AGP 8.5.1+ and NDK r28+",
-        "Rebuild or update prebuilt .so files and SDKs"
-      ]
+      "fix": ["Upgrade to AGP 8.5.1+ and NDK r28+", "Rebuild or update prebuilt .so files and SDKs"]
     },
     {
       "id": "AND-16K-003",
