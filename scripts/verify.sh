@@ -40,6 +40,15 @@ npx tsx scripts/sync-rules.ts --check
 echo "==> Rules doc freshness"
 npx tsx scripts/gen-rules-doc.ts --check
 
+echo "==> Web samples freshness"
+npx tsx scripts/gen-web-samples.ts --check
+
+echo "==> Build web app"
+npm run build
+
+echo "==> Size budget"
+npm run size
+
 if [[ "$full" == true ]]; then
   echo "==> Git hooks self-test"
   ./scripts/test-git-hooks.sh

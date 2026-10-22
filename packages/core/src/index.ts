@@ -174,6 +174,7 @@ export type { AndroidRuleCheckOptions } from './rules/checks/android.ts';
 export { evaluateIosRules, evaluateAndroidRules } from './rules/engine.ts';
 export { buildReport } from './report/build.ts';
 export { ZipArchive } from './zip/centralDirectory.ts';
+export type { ZipEntry } from './zip/centralDirectory.ts';
 export type { FormFactor } from './android/formFactor.ts';
 export { inferFormFactor } from './android/formFactor.ts';
 export { reportToMarkdown } from './report/markdown.ts';

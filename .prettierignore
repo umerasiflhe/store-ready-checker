@@ -10,6 +10,7 @@ packages/core/src/gen
 cli/Sources/StoreReadyCore/Generated
 cli/Sources/StoreReadyCore/Resources
 fixtures/files
+apps/web/src/samples.data.ts
 docs/RULES.md
 package-lock.json
 cli/Package.resolved

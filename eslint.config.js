@@ -15,6 +15,7 @@ export default defineConfig([
     '**/coverage/**',
     'packages/core/src/gen/**',
     'fixtures/files/**',
+    'apps/web/src/samples.data.ts',
     'playwright-report/**',
     'test-results/**',
     '.build/**',

@@ -1,3 +1,5 @@
 import './styles.css';
 
-export {};
+export function createAnalysisWorker(): Worker {
+  return new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
+}
