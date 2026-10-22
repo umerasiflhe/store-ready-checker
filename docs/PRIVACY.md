@@ -19,12 +19,11 @@ the worker script, icons) — nothing else, not even while analysing a file.
 ## How this is enforced
 
 1. **Content-Security-Policy** `<meta>` tag with `connect-src 'none'`, `script-src 'self'`,
-   `worker-src 'self' blob:'`, `object-src 'none'`, `form-action 'none'` — see `apps/web/index.html`
-   once it exists (Milestone 3).
+   `worker-src 'self' blob:'`, `object-src 'none'`, `form-action 'none'` — see `apps/web/index.html`.
 2. **ESLint rules** (`eslint.config.js`) ban `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`,
    `navigator.sendBeacon`, and `importScripts` in `apps/web/src/**` and `packages/core/src/**`.
-3. **An automated Playwright test** (Milestone 3) records every network request for a whole
-   analysis session and fails if anything but a same-origin static-asset `GET` is observed, and a
+3. **Automated Playwright tests** (`e2e/privacy.spec.ts`) record every network request for a whole
+   analysis session and fail if anything but a same-origin static-asset `GET` is observed, and a
    separate test loads the app offline (`context.setOffline(true)`) and analyses a sample
    successfully.
 

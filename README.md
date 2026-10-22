@@ -7,17 +7,17 @@ Check an iOS or Android build against the current App Store Connect and Google P
 
 > **Status: in development.** The web checker will be live at <https://umerasiflhe.github.io/store-ready-checker/> after Milestone 5. Progress is in [CHANGELOG.md](CHANGELOG.md).
 >
-> **Works today (Milestone 2 — iOS + Android core):** `packages/core` reads a real `.ipa`,
-> `.aab`, or `.apk` end to end, entirely in TypeScript. iOS: zip reading, binary and XML plist
-> parsing, Mach-O analysis (symbols, bind opcodes, chained fixups, Objective-C selectors,
-> encryption detection), bundle discovery, required-reason API and privacy-manifest checks,
-> listed-SDK matching. Android: an `aapt.pb.XmlNode` protobuf decoder (AAB) and a binary-XML
-> (AXML) decoder (APK) for `AndroidManifest.xml`, form-factor inference, an ELF64 program-header
-> reader and native-library walker, zip-alignment and `BundleConfig.pb` checks for the 16 KB
-> page-size rules. Every `IOS-*` and `AND-*` rule from the table below is wired up, verified
-> against 32 synthetic fixtures and a ≥90%/85% line/branch coverage gate. There's no UI yet
-> (Milestone 3) and no Swift CLI parity yet (Milestone 4); repo scaffolding, tooling, and the v1
-> rule data landed in Milestone 0.
+> **Works today (Milestone 3 — web app):** drop (or try a sample) `.ipa`, `.aab`, or `.apk` at
+> `npm run dev`/`npm run build` + `npm run preview` and get a full report, entirely client-side —
+> a Web Worker parses the zip's central directory once, evaluates every `IOS-*`/`AND-*` rule
+> below, and lets you change the "Check as of" date or an Android form-factor override and
+> re-evaluate instantly without re-reading the file. Results are filterable by severity, with
+> evidence/fix-steps/sources per finding, copy-as-Markdown, and download-JSON. Installable
+> offline PWA; CSP blocks any outgoing request. Verified by 80 Playwright tests across
+> Chromium/Firefox/WebKit/a mobile viewport (drop/sample flows, keyboard-only use, zero
+> accessibility violations, zero network requests beyond same-origin static assets, a 500 MB
+> file analysed in under 10 s) plus the 32 synthetic-fixture/unit-test suite from Milestones 1–2.
+> No Swift CLI parity yet (Milestone 4); not deployed to Pages yet (Milestone 5).
 
 ## What it checks
 
@@ -54,9 +54,12 @@ Your build is read by a Web Worker inside your browser and is never sent anywher
 ```bash
 npm ci                # install dependencies and the git hooks
 npm run dev           # web app at http://localhost:5173/store-ready-checker/
+npm run build         # production build (apps/web/dist)
+npm run preview       # serve that build at http://localhost:4173/store-ready-checker/
 npm run lint          # every linter
 npm test              # unit tests
 ./scripts/verify.sh   # what CI checks, quickly
+./scripts/verify.sh --full   # adds the Playwright e2e suite
 ```
 
 Needs Node (version in `.nvmrc`), Xcode 26 for the Swift CLI, and `brew install actionlint shellcheck`. Every commit runs the linters and unit tests through git hooks; see [CONTRIBUTING.md](CONTRIBUTING.md).

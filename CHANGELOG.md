@@ -52,3 +52,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   branches, the `2027-02-01` 16 KB severity boundary (asserted both sides against the same
   fixture), the RELRO own-segment exemption, zip-alignment vs. compression gating, and
   malformed-manifest/not-a-zip/no-manifest edge cases.
+- Milestone 3 (web app): `apps/web` is a real Vite + vanilla-TypeScript PWA at
+  `/store-ready-checker/`. A Web Worker (`apps/web/src/worker.ts`) parses a dropped/picked
+  `.ipa`/`.aab`/`.apk` once, caches the extracted facts, and evaluates rules against them;
+  changing the "Check as of" date or an Android form-factor override sends a cheap `reevaluate`
+  message that re-runs only the rules engine — never re-reading the archive. `packages/core`'s
+  public API grew the split this needs (`analyzeIosBundles`/`analyzeAndroidBundle`,
+  `evaluateIosRules`/`evaluateAndroidRules`, `buildReport`, `ZipArchive`) alongside the existing
+  one-shot `analyzeIpa`/`analyzeAab`/`analyzeApk`, plus an optional `formFactorOverride` on
+  `evaluateAndroidRules` and a new `reportToMarkdown` serializer.
+- UI states: idle (drop zone, file picker, three bundled sample builds — never fetched, inlined
+  as base64 by `scripts/gen-web-samples.ts`), analysing (stage progress, cancel), result (verdict
+  banner, severity filter, expandable findings with evidence/fix/sources/heuristic badges,
+  copy-as-Markdown, download-JSON), and four error states. A persistent trust panel and footer
+  (version, rules version, GitHub link, `VITE_CONTACT_URL` CTA) render throughout.
+- CSP exactly per brief §6.5; PWA via `vite-plugin-pwa` (same-origin precache only); `size-limit`
+  keeps the initial JS under 120 KB gzip (currently ~45 KB — the worker and `packages/core` are
+  lazily loaded as a separate chunk only once a file is analysed).
+- 80 Playwright tests (`e2e/*.spec.ts`) across Chromium, Firefox, WebKit, and a Pixel 7 mobile
+  viewport: sample/drop/file-input flows against the golden fixtures, keyboard-only operation,
+  zero `@axe-core/playwright` violations on idle/result/error, a privacy test recording every
+  network request for a full session (same-origin static `GET`s only, zero while analysing),
+  offline-after-first-load, console/CSP-violation failures, the 16K finding's severity flip
+  across `2027-02-01`, schema-validated JSON/Markdown exports, and a ~500 MB synthetic-IPA
+  (`fixtures/generators/large-ipa.ts`, generated on demand, never committed) analysed in under
+  10 s on desktop Chromium. Found and fixed two real bugs along the way: inline `style.x =`
+  assignments were silently violating our own CSP under WebKit, and the drop zone was a
+  `div[role=button][tabindex=0]`, which Safari's default Tab order skips — it's a real `<button>`
+  now.
+- CI (`ci.yml`): `web` job gained a build step, `size-limit`, and web-samples freshness; new
+  `e2e` job runs the full Playwright suite and uploads the report on failure.
