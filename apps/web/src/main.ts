@@ -1,5 +1,9 @@
 import './styles.css';
+import { App } from './app.ts';
 
-export function createAnalysisWorker(): Worker {
-  return new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
+const root = document.getElementById('app');
+if (!root) {
+  throw new Error('#app root element is missing from index.html');
 }
+
+new App(root).mount();

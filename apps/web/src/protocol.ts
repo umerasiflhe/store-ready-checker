@@ -30,7 +30,7 @@ export interface ReportMessage {
   readonly androidFormFactor: FormFactor | undefined;
 }
 
-export type ErrorCategory = 'not-a-zip' | 'unsupported' | 'corrupted' | 'no-session';
+export type ErrorCategory = 'not-a-zip' | 'unsupported' | 'corrupted' | 'no-session' | 'too-large';
 
 export interface ErrorMessage {
   readonly type: 'error';
