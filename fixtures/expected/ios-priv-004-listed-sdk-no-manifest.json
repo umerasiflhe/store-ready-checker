@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.1.0", "rulesVersion": "2026.10.20" },
+    "asOf": "2026-10-20",
+    "input": {
+      "fileName": "ios-priv-004-listed-sdk-no-manifest.ipa",
+      "sizeBytes": 1155,
+      "kind": "ipa"
+    },
+    "app": { "platform": "ios", "id": "com.example.myapp", "version": "1.0.0", "build": "1" },
+    "summary": { "status": "attention", "errors": 0, "warnings": 1, "infos": 0 },
+    "findings": [
+      {
+        "ruleId": "IOS-PRIV-004",
+        "severity": "warning",
+        "confidence": "certain",
+        "title": "Listed third-party SDK bundled without its own privacy manifest — Alamofire",
+        "message": "Alamofire is on Apple's list of third-party SDKs that require a privacy manifest, but this copy has none.",
+        "evidence": {
+          "bundle": "Payload/MyApp.app/Frameworks/Alamofire.framework",
+          "framework": "Alamofire"
+        },
+        "fix": [
+          "Update the SDK to a version that ships its own PrivacyInfo.xcprivacy",
+          "Contact the SDK vendor if no version ships a privacy manifest yet"
+        ],
+        "sources": [
+          {
+            "title": "Apple — Third-party SDK requirements",
+            "url": "https://developer.apple.com/support/third-party-SDK-requirements/"
+          }
+        ]
+      }
+    ]
+  }
+}

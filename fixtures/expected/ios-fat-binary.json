@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.1.0", "rulesVersion": "2026.10.20" },
+    "asOf": "2026-10-20",
+    "input": { "fileName": "ios-fat-binary.ipa", "sizeBytes": 1137, "kind": "ipa" },
+    "app": { "platform": "ios", "id": "com.example.myapp", "version": "1.0.0", "build": "1" },
+    "summary": { "status": "ready", "errors": 0, "warnings": 0, "infos": 0 },
+    "findings": []
+  }
+}

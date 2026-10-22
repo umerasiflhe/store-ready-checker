@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.1.0", "rulesVersion": "2026.10.20" },
+    "asOf": "2026-10-20",
+    "input": {
+      "fileName": "ios-priv-003-malformed-manifest.ipa",
+      "sizeBytes": 1048,
+      "kind": "ipa"
+    },
+    "app": { "platform": "ios", "id": "com.example.myapp", "version": "1.0.0", "build": "1" },
+    "summary": { "status": "blocked", "errors": 1, "warnings": 0, "infos": 0 },
+    "findings": [
+      {
+        "ruleId": "IOS-PRIV-003",
+        "severity": "error",
+        "confidence": "certain",
+        "title": "Privacy manifest is malformed or declares an unknown category/reason code — Payload/MyApp.app",
+        "message": "PrivacyInfo.xcprivacy is structurally malformed.",
+        "evidence": { "bundle": "Payload/MyApp.app" },
+        "fix": [
+          "Fix the malformed PrivacyInfo.xcprivacy plist",
+          "Use only documented NSPrivacyAccessedAPIType and NSPrivacyAccessedAPITypeReasons values"
+        ],
+        "sources": [
+          {
+            "title": "Apple — Describing use of required reason API",
+            "url": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api"
+          }
+        ]
+      }
+    ]
+  }
+}

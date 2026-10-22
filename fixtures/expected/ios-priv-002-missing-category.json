@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.1.0", "rulesVersion": "2026.10.20" },
+    "asOf": "2026-10-20",
+    "input": { "fileName": "ios-priv-002-missing-category.ipa", "sizeBytes": 1068, "kind": "ipa" },
+    "app": { "platform": "ios", "id": "com.example.myapp", "version": "1.0.0", "build": "1" },
+    "summary": { "status": "blocked", "errors": 1, "warnings": 0, "infos": 0 },
+    "findings": [
+      {
+        "ruleId": "IOS-PRIV-002",
+        "severity": "error",
+        "confidence": "heuristic",
+        "title": "Required-reason API category not declared — Payload/MyApp.app",
+        "message": "A required-reason API category was detected that is not declared in NSPrivacyAccessedAPITypes.",
+        "evidence": {
+          "bundle": "Payload/MyApp.app",
+          "categories": ["NSPrivacyAccessedAPICategoryDiskSpace"]
+        },
+        "fix": [
+          "Add an NSPrivacyAccessedAPITypes entry for the detected category",
+          "Choose the correct NSPrivacyAccessedAPITypeReasons code for how the API is used"
+        ],
+        "sources": [
+          {
+            "title": "Apple — Describing use of required reason API",
+            "url": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api"
+          }
+        ]
+      }
+    ]
+  }
+}

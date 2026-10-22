@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.1.0", "rulesVersion": "2026.10.20" },
+    "asOf": "2026-10-20",
+    "input": { "fileName": "ios-old-minos.ipa", "sizeBytes": 631, "kind": "ipa" },
+    "app": { "platform": "ios", "id": "com.example.myapp", "version": "1.0.0", "build": "1" },
+    "summary": { "status": "blocked", "errors": 1, "warnings": 0, "infos": 0 },
+    "findings": [
+      {
+        "ruleId": "IOS-MINOS-001",
+        "severity": "error",
+        "confidence": "certain",
+        "title": "MinimumOSVersion 12.0 is below the required 13.0",
+        "message": "App Store Connect requires MinimumOSVersion to be at least 13.0.",
+        "evidence": { "bundle": "Payload/MyApp.app", "MinimumOSVersion": "12.0" },
+        "fix": [
+          "Raise the deployment target / MinimumOSVersion to iOS 13.0 or later",
+          "Archive again and re-export the IPA"
+        ],
+        "sources": [
+          {
+            "title": "Apple — Upcoming requirements",
+            "url": "https://developer.apple.com/news/upcoming-requirements/"
+          }
+        ]
+      }
+    ]
+  }
+}

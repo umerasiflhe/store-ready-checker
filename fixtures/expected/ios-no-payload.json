@@ -1,0 +1,4 @@
+{
+  "ok": false,
+  "error": { "code": "NO_PAYLOAD", "message": "no Payload/<Name>.app/ entry found in the archive" }
+}

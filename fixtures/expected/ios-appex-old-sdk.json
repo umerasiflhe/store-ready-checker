@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.1.0", "rulesVersion": "2026.10.20" },
+    "asOf": "2026-10-20",
+    "input": { "fileName": "ios-appex-old-sdk.ipa", "sizeBytes": 1320, "kind": "ipa" },
+    "app": { "platform": "ios", "id": "com.example.myapp", "version": "1.0.0", "build": "1" },
+    "summary": { "status": "blocked", "errors": 1, "warnings": 0, "infos": 0 },
+    "findings": [
+      {
+        "ruleId": "IOS-SDK-001",
+        "severity": "error",
+        "confidence": "certain",
+        "title": "Built with an SDK older than iOS 26 — Payload/MyApp.app/PlugIns/Share.appex",
+        "message": "App Store Connect requires every app and embedded app extension to be built with Xcode 26 or later, using the iOS 26 SDK or later.",
+        "evidence": {
+          "bundle": "Payload/MyApp.app/PlugIns/Share.appex",
+          "DTXcode": "1640",
+          "DTSDKName": "iphoneos18.5",
+          "DTPlatformVersion": "18.5"
+        },
+        "fix": ["Install Xcode 26 or later", "Archive again and re-export the IPA"],
+        "sources": [
+          {
+            "title": "Apple — Upcoming requirements",
+            "url": "https://developer.apple.com/news/upcoming-requirements/"
+          }
+        ]
+      }
+    ]
+  }
+}

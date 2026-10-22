@@ -21,8 +21,8 @@ npm run lint
 echo "==> Typecheck"
 npm run typecheck
 
-echo "==> Unit tests"
-npm run test:unit
+echo "==> Unit tests + coverage gate"
+npm run test:coverage
 
 if [[ "$(uname -s)" == "Darwin" && -f cli/Package.swift ]]; then
   echo "==> Swift tests"
