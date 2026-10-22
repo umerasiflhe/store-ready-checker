@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; worker-src 'self' blob:; connect-src 'none'; img-src 'self' data: blob:; style-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Store Ready — check a build before you upload it</title>
+    <meta
+      name="description"
+      content="Check an iOS (.ipa) or Android (.aab/.apk) build against current App Store Connect and Google Play upload rules before you upload it. Runs entirely in your browser; your file is never uploaded."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" href="%BASE_URL%icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="%BASE_URL%icon.svg" />
+    <meta name="theme-color" content="#0b0d10" />
+    <meta property="og:title" content="Store Ready" />
+    <meta
+      property="og:description"
+      content="Check an iOS or Android build against current store upload rules before you upload it. Nothing ever leaves your browser."
+    />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
