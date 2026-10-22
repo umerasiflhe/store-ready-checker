@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.1.0", "rulesVersion": "2026.10.20" },
+    "asOf": "2026-10-20",
+    "input": { "fileName": "android-apk-zip-misaligned.apk", "sizeBytes": 851, "kind": "apk" },
+    "app": { "platform": "android", "id": "com.example.app", "version": "1.0", "build": "1" },
+    "summary": { "status": "attention", "errors": 0, "warnings": 1, "infos": 0 },
+    "findings": [
+      {
+        "ruleId": "AND-16K-003",
+        "severity": "warning",
+        "confidence": "certain",
+        "title": "Stored native library is not zip-aligned to 16384 bytes — lib/arm64-v8a/libnative.so",
+        "message": "Re-run zipalign with 16 KB alignment before signing the APK.",
+        "evidence": {
+          "path": "lib/arm64-v8a/libnative.so",
+          "abi": "arm64-v8a",
+          "zipDataOffset": 556
+        },
+        "fix": ["Re-run zipalign with -P 16 before signing the APK"],
+        "sources": [
+          {
+            "title": "Android — Support 16 KB page sizes",
+            "url": "https://developer.android.com/guide/practices/page-sizes"
+          }
+        ]
+      }
+    ]
+  }
+}

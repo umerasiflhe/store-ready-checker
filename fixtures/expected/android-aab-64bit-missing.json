@@ -1,0 +1,44 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.1.0", "rulesVersion": "2026.10.20" },
+    "asOf": "2026-10-20",
+    "input": { "fileName": "android-aab-64bit-missing.aab", "sizeBytes": 513, "kind": "aab" },
+    "app": { "platform": "android", "id": "com.example.app", "version": "1.0", "build": "1" },
+    "summary": { "status": "blocked", "errors": 1, "warnings": 0, "infos": 1 },
+    "findings": [
+      {
+        "ruleId": "AND-64BIT-001",
+        "severity": "error",
+        "confidence": "certain",
+        "title": "armeabi-v7a native code ships without a matching arm64-v8a library",
+        "message": "Google Play requires a matching 64-bit native library alongside any 32-bit one.",
+        "evidence": { "abi": "armeabi-v7a", "missingAbi": "arm64-v8a" },
+        "fix": ["Build and ship a matching 64-bit (arm64-v8a / x86_64) native library"],
+        "sources": [
+          {
+            "title": "Google Play — 64-bit requirement",
+            "url": "https://developer.android.com/google/play/requirements/64-bit"
+          }
+        ]
+      },
+      {
+        "ruleId": "AND-INFO-001",
+        "severity": "info",
+        "confidence": "certain",
+        "title": "No 64-bit-relevant native code detected",
+        "message": "The 16 KB page-size checks do not apply: no arm64-v8a or x86_64 native library was found.",
+        "evidence": { "abis": ["armeabi-v7a"] },
+        "fix": [
+          "No action needed — this app has no native code, only 32-bit native code, or declares android:pageSizeCompat."
+        ],
+        "sources": [
+          {
+            "title": "Android — Support 16 KB page sizes",
+            "url": "https://developer.android.com/guide/practices/page-sizes"
+          }
+        ]
+      }
+    ]
+  }
+}

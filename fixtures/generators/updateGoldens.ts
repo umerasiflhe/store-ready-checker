@@ -1,7 +1,7 @@
-// Runs the real TS core against every committed iOS fixture and writes its output to
+// Runs the real TS core against every committed iOS/Android fixture and writes its output to
 // fixtures/expected/<name>.json. Per the `make-fixture` skill: review the diff deliberately
 // before committing — this script is meant to be run, read, and checked in, not trusted blindly.
-import { analyzeIpa } from '../../packages/core/src/index.ts';
+import { analyzeAab, analyzeApk, analyzeIpa } from '../../packages/core/src/index.ts';
 import { parseListedSdksSeed } from '../../packages/core/src/ios/listedSdks.ts';
 import { parseRequiredReasonSeed } from '../../packages/core/src/ios/requiredReason.ts';
 import { parseRulesFile } from '../../packages/core/src/rules/types.ts';
@@ -45,6 +45,51 @@ const IOS_FIXTURES = [
   'ios-binary-plist.ipa',
 ];
 
+interface AndroidFixtureCase {
+  readonly fileName: string;
+  readonly asOf: string;
+  readonly goldenName: string;
+}
+
+const DEFAULT_AS_OF = '2026-10-20';
+
+function androidFixture(
+  fileName: string,
+  asOf = DEFAULT_AS_OF,
+  goldenName?: string,
+): AndroidFixtureCase {
+  return { fileName, asOf, goldenName: goldenName ?? fileName.replace(/\.(aab|apk)$/, '') };
+}
+
+const ANDROID_FIXTURES: readonly AndroidFixtureCase[] = [
+  androidFixture('android-aab-passing.aab'),
+  androidFixture('android-aab-tsdk-low.aab'),
+  androidFixture('android-aab-tsdk-wear.aab'),
+  androidFixture('android-aab-tsdk-tv.aab'),
+  androidFixture('android-aab-tsdk-preview.aab'),
+  androidFixture('android-aab-missing-uses-sdk.aab'),
+  androidFixture(
+    'android-aab-16k-load-misaligned.aab',
+    '2026-10-20',
+    'android-aab-16k-load-misaligned-warning',
+  ),
+  androidFixture(
+    'android-aab-16k-load-misaligned.aab',
+    '2027-02-01',
+    'android-aab-16k-load-misaligned-error',
+  ),
+  androidFixture('android-aab-16k-relro-misaligned.aab'),
+  androidFixture('android-aab-16k-relro-exempt.aab'),
+  androidFixture('android-aab-16k-bundleconfig-missing-flag.aab'),
+  androidFixture('android-aab-64bit-missing.aab'),
+  androidFixture('android-aab-malformed-manifest.aab'),
+  androidFixture('android-apk-passing.apk'),
+  androidFixture('android-apk-zip-misaligned.apk'),
+  androidFixture('android-apk-zip-compressed-skipped.apk'),
+  androidFixture('android-apk-not-a-zip.apk'),
+  androidFixture('android-apk-no-manifest.apk'),
+];
+
 async function main(): Promise<void> {
   for (const fileName of IOS_FIXTURES) {
     const blob = readFixtureBlob(fileName);
@@ -57,6 +102,19 @@ async function main(): Promise<void> {
       listedSdks,
     });
     const goldenName = fileName.replace(/\.ipa$/, '');
+    await writeExpected(goldenName, result);
+    console.log(`wrote fixtures/expected/${goldenName}.json`);
+  }
+
+  for (const { fileName, asOf, goldenName } of ANDROID_FIXTURES) {
+    const blob = readFixtureBlob(fileName);
+    const analyze = fileName.endsWith('.aab') ? analyzeAab : analyzeApk;
+    const result = await analyze(new BlobByteSource(blob), {
+      fileName,
+      asOf,
+      toolVersion: '0.1.0',
+      rules: rulesFile,
+    });
     await writeExpected(goldenName, result);
     console.log(`wrote fixtures/expected/${goldenName}.json`);
   }

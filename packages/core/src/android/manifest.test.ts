@@ -119,4 +119,64 @@ describe('extractManifestFacts', () => {
     );
     expect(facts.minSdkVersion).toBe(21);
   });
+
+  it('reads a minSdkVersion given as a numeric string', () => {
+    const root: RawElement = {
+      name: 'manifest',
+      attributes: [],
+      children: [
+        {
+          name: 'uses-sdk',
+          attributes: [
+            {
+              name: 'minSdkVersion',
+              resourceId: RES_ID_MIN_SDK_VERSION,
+              value: { kind: 'string', value: '21' },
+            },
+          ],
+          children: [],
+        },
+      ],
+    };
+    expect(extractManifestFacts(root).minSdkVersion).toBe(21);
+  });
+
+  it('coerces an int-kind versionName to a string', () => {
+    const root: RawElement = {
+      name: 'manifest',
+      attributes: [
+        { name: 'versionName', resourceId: RES_ID_VERSION_NAME, value: { kind: 'int', value: 5 } },
+      ],
+      children: [],
+    };
+    expect(extractManifestFacts(root).versionName).toBe('5');
+  });
+
+  it('assumes the target SDK when its compiled value is neither int nor string', () => {
+    const root: RawElement = {
+      name: 'manifest',
+      attributes: [],
+      children: [
+        {
+          name: 'uses-sdk',
+          attributes: [
+            {
+              name: 'minSdkVersion',
+              resourceId: RES_ID_MIN_SDK_VERSION,
+              value: { kind: 'int', value: 24 },
+            },
+            {
+              name: 'targetSdkVersion',
+              resourceId: RES_ID_TARGET_SDK_VERSION,
+              value: { kind: 'boolean', value: true },
+            },
+          ],
+          children: [],
+        },
+      ],
+    };
+    const facts = extractManifestFacts(root);
+    expect(facts.targetSdkVersion).toEqual({ kind: 'released', value: 24 });
+    expect(facts.targetSdkAssumed).toBe(true);
+  });
 });

@@ -1,0 +1,4 @@
+{
+  "ok": false,
+  "error": { "code": "NO_MANIFEST", "message": "no AndroidManifest.xml found in the archive" }
+}

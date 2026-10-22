@@ -1,0 +1,67 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.1.0", "rulesVersion": "2026.10.20" },
+    "asOf": "2026-10-20",
+    "input": { "fileName": "android-aab-tsdk-wear.aab", "sizeBytes": 385, "kind": "aab" },
+    "app": { "platform": "android", "id": "com.example.app", "version": "1.0", "build": "1" },
+    "summary": { "status": "blocked", "errors": 1, "warnings": 1, "infos": 1 },
+    "findings": [
+      {
+        "ruleId": "AND-TSDK-001",
+        "severity": "error",
+        "confidence": "certain",
+        "title": "targetSdkVersion 34 is below the required 35 for wear",
+        "message": "Google Play requires targetSdkVersion to meet the minimum for this form factor.",
+        "evidence": {
+          "targetSdkVersion": 34,
+          "targetSdkAssumed": false,
+          "formFactor": "wear",
+          "required": 35
+        },
+        "fix": [
+          "Raise targetSdkVersion to meet the Play requirement for your app's form factor",
+          "Test thoroughly against the new target SDK before re-uploading"
+        ],
+        "sources": [
+          {
+            "title": "Google Play — Target API level requirements",
+            "url": "https://developer.android.com/google/play/requirements/target-sdk"
+          }
+        ]
+      },
+      {
+        "ruleId": "AND-TSDK-002",
+        "severity": "warning",
+        "confidence": "certain",
+        "title": "targetSdkVersion 34 is below 35",
+        "message": "Google Play recommends targetSdkVersion stay at least 35 to remain visible to new users.",
+        "evidence": { "targetSdkVersion": 34, "targetSdkAssumed": false },
+        "fix": ["Raise targetSdkVersion to at least 35"],
+        "sources": [
+          {
+            "title": "Google Play — Target API level requirements",
+            "url": "https://developer.android.com/google/play/requirements/target-sdk"
+          }
+        ]
+      },
+      {
+        "ruleId": "AND-INFO-001",
+        "severity": "info",
+        "confidence": "certain",
+        "title": "No 64-bit-relevant native code detected",
+        "message": "The 16 KB page-size checks do not apply: no arm64-v8a or x86_64 native library was found.",
+        "evidence": { "abis": [] },
+        "fix": [
+          "No action needed — this app has no native code, only 32-bit native code, or declares android:pageSizeCompat."
+        ],
+        "sources": [
+          {
+            "title": "Android — Support 16 KB page sizes",
+            "url": "https://developer.android.com/guide/practices/page-sizes"
+          }
+        ]
+      }
+    ]
+  }
+}

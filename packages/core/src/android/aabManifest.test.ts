@@ -113,6 +113,54 @@ describe('decodeAabManifest', () => {
     });
   });
 
+  it('decodes a boolean compiled Primitive', () => {
+    const booleanValue: Extract<Primitive['oneofValue'], { case: 'booleanValue' }> = {
+      case: 'booleanValue',
+      value: true,
+    };
+    const item = create(ItemSchema, {
+      value: { case: 'prim', value: create(PrimitiveSchema, { oneofValue: booleanValue }) },
+    });
+    const bytes = manifestNode({
+      name: 'manifest',
+      attribute: [{ name: 'debuggable', value: 'true', compiledItem: item }],
+    });
+    const result = decodeAabManifest(bytes);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.attributes[0]?.value).toEqual({ kind: 'boolean', value: true });
+  });
+
+  it('falls back to an empty string for a Primitive of an unsupported flavor', () => {
+    const floatValue: Extract<Primitive['oneofValue'], { case: 'floatValue' }> = {
+      case: 'floatValue',
+      value: 1.5,
+    };
+    const item = create(ItemSchema, {
+      value: { case: 'prim', value: create(PrimitiveSchema, { oneofValue: floatValue }) },
+    });
+    const bytes = manifestNode({
+      name: 'manifest',
+      attribute: [{ name: 'weird', value: '1.5', compiledItem: item }],
+    });
+    const result = decodeAabManifest(bytes);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.attributes[0]?.value).toEqual({ kind: 'string', value: '' });
+  });
+
+  it('falls back to an empty string for a compiled Item that is neither str nor prim', () => {
+    const item = create(ItemSchema, { value: { case: 'id', value: {} } });
+    const bytes = manifestNode({
+      name: 'manifest',
+      attribute: [{ name: 'weird', value: 'raw', compiledItem: item }],
+    });
+    const result = decodeAabManifest(bytes);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.attributes[0]?.value).toEqual({ kind: 'string', value: '' });
+  });
+
   it('returns a typed error when the root XmlNode is not an element', () => {
     const node = create(XmlNodeSchema, { node: { case: 'text', value: 'not an element' } });
     const result = decodeAabManifest(toBinary(XmlNodeSchema, node));
