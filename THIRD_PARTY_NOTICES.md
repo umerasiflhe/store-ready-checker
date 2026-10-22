@@ -7,10 +7,17 @@ license terms, noted below.
 
 `proto/` vendors `.proto` schema files from the Android Open Source Project and Google's
 `bundletool`, both licensed under the Apache License, Version 2.0
-(<http://www.apache.org/licenses/LICENSE-2.0>). Their original license headers are preserved in
-each vendored file. These arrive in Milestone 2 alongside the Android protobuf-manifest parser
-(see [docs/adr/0006-protobuf-codegen.md](docs/adr/0006-protobuf-codegen.md)); this section will be
-updated with the exact file list and upstream source commit/tag at that point.
+(<http://www.apache.org/licenses/LICENSE-2.0>). See [proto/README.md](proto/README.md) for the
+exact file list, upstream source URLs, commit hashes and retrieval dates (per
+[docs/adr/0006-protobuf-codegen.md](docs/adr/0006-protobuf-codegen.md)):
+
+- `proto/aapt2/Resources.proto`, `proto/aapt2/Configuration.proto` — Android Open Source Project,
+  `frameworks/base/tools/aapt2/` (original Apache-2.0 header preserved).
+- `proto/bundletool/config.proto` — Google's `bundletool`, `src/main/proto/config.proto` (no
+  per-file header upstream; licensed Apache-2.0 under that repo's root `LICENSE`).
+
+TypeScript generated from these schemas (`packages/core/src/gen/`, via `npm run proto:gen`) is
+machine-generated and committed per ADR 0006; it is not itself vendored third-party source.
 
 ## npm and Swift package dependencies
 

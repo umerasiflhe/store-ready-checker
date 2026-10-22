@@ -25,12 +25,15 @@
     "test:e2e": "playwright test -c e2e/playwright.config.ts",
     "test:swift": "swift test --package-path cli",
     "check:repo": "tsx scripts/check-repo.ts",
+    "proto:gen": "tsx scripts/gen-proto.ts",
     "rules:sync": "tsx scripts/sync-rules.ts",
     "rules:doc": "tsx scripts/gen-rules-doc.ts",
     "verify": "./scripts/verify.sh",
     "prepare": "lefthook install"
   },
   "devDependencies": {
+    "@bufbuild/buf": "^1.75.0",
+    "@bufbuild/protoc-gen-es": "^2.16.0",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
     "@eslint/js": "^10.0.1",

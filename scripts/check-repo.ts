@@ -164,6 +164,19 @@ function checkReadmeLinks(): void {
   }
 }
 
+function checkProtoGenFreshness(): void {
+  if (!existsSync(join(repoRoot, 'proto'))) return;
+
+  try {
+    execFileSync('npx', ['tsx', 'scripts/gen-proto.ts', '--check'], {
+      cwd: repoRoot,
+      stdio: 'pipe',
+    });
+  } catch {
+    problems.push('packages/core/src/gen is stale relative to proto/ — run: npm run proto:gen');
+  }
+}
+
 async function checkRulesBlockFreshness(): Promise<void> {
   if (!existsSync(join(repoRoot, 'rules/rules.json'))) return;
 
@@ -190,6 +203,7 @@ checkNoStrayBinaries();
 checkFileSizes();
 checkNoIgnoredTrackedFiles();
 checkReadmeLinks();
+checkProtoGenFreshness();
 await checkRulesBlockFreshness();
 
 if (problems.length > 0) {
