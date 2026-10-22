@@ -18,7 +18,7 @@
     "lint:shell": "bash -c 'shopt -s nullglob; files=(scripts/*.sh .claude/hooks/*.sh); [ ${#files[@]} -eq 0 ] || shellcheck \"${files[@]}\"'",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc -p tsconfig.json --noEmit && npm run typecheck --workspaces --if-present",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p e2e/tsconfig.json --noEmit && npm run typecheck --workspaces --if-present",
     "test": "npm run test:unit",
     "test:unit": "vitest run",
     "test:coverage": "vitest run --coverage",

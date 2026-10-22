@@ -27,7 +27,7 @@ export function renderError(
   const heading = document.createElement('p');
   heading.textContent = MESSAGE_BY_CATEGORY[category];
   const detailText = document.createElement('p');
-  detailText.style.fontSize = '0.85rem';
+  detailText.className = 'detail-text';
   detailText.textContent = detail;
 
   const retryButton = document.createElement('button');

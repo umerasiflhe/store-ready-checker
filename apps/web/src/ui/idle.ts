@@ -10,20 +10,18 @@ const ACCEPT = '.ipa,.aab,.apk';
 export function renderIdle(container: HTMLElement, handlers: IdleHandlers): void {
   container.innerHTML = '';
 
-  const dropZone = document.createElement('div');
+  // A real <button>, not a div[role=button][tabindex=0]: Safari/WebKit only includes
+  // tabindex-only elements in Tab navigation when "Full Keyboard Access" is on, so a div here
+  // would be unreachable by keyboard in a default Safari install.
+  const dropZone = document.createElement('button');
+  dropZone.type = 'button';
   dropZone.className = 'drop-zone';
-  dropZone.setAttribute('role', 'button');
-  dropZone.setAttribute('tabindex', '0');
-  dropZone.setAttribute(
-    'aria-label',
-    'Drop an .ipa, .aab, or .apk file here, or press Enter to choose a file',
-  );
 
   const title = document.createElement('p');
   title.textContent = 'Drop an .ipa, .aab, or .apk here';
   const subtitle = document.createElement('p');
   subtitle.textContent = 'or click / press Enter to choose a file';
-  subtitle.style.color = 'var(--color-muted)';
+  subtitle.className = 'muted';
   dropZone.append(title, subtitle);
 
   const input = document.createElement('input');
@@ -37,13 +35,9 @@ export function renderIdle(container: HTMLElement, handlers: IdleHandlers): void
     input.click();
   };
 
+  // A native button already activates openPicker on click, Enter, and Space — no keydown
+  // handler needed.
   dropZone.addEventListener('click', openPicker);
-  dropZone.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      openPicker();
-    }
-  });
   dropZone.addEventListener('dragover', (event) => {
     event.preventDefault();
     dropZone.classList.add('is-dragover');
@@ -66,9 +60,7 @@ export function renderIdle(container: HTMLElement, handlers: IdleHandlers): void
 
   const samplesHeading = document.createElement('p');
   samplesHeading.textContent = 'Or try a sample:';
-  samplesHeading.style.textAlign = 'center';
-  samplesHeading.style.color = 'var(--color-muted)';
-  samplesHeading.style.marginTop = '1rem';
+  samplesHeading.className = 'samples-heading';
 
   const samplesRow = document.createElement('div');
   samplesRow.className = 'samples';

@@ -60,6 +60,20 @@ a {
   outline-offset: 2px;
 }
 
+.muted {
+  color: var(--color-muted);
+}
+
+.samples-heading {
+  text-align: center;
+  color: var(--color-muted);
+  margin-top: 1rem;
+}
+
+.detail-text {
+  font-size: 0.85rem;
+}
+
 button,
 input,
 select {
@@ -81,6 +95,8 @@ button:hover {
 }
 
 .drop-zone {
+  display: block;
+  width: 100%;
   border: 2px dashed var(--color-border);
   border-radius: 12px;
   padding: 3rem 1.5rem;

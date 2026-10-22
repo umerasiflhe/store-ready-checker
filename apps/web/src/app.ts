@@ -36,8 +36,16 @@ export class App {
   }
 
   mount(): void {
-    renderTrustPanel(this.root);
-    this.root.append(this.main);
+    const header = document.createElement('header');
+    const heading = document.createElement('h1');
+    heading.textContent = 'Store Ready';
+    const tagline = document.createElement('p');
+    tagline.textContent =
+      'Check an iOS or Android build against current store upload rules before you upload it.';
+    header.append(heading, tagline);
+    renderTrustPanel(header);
+
+    this.root.append(header, this.main);
     renderFooter(this.root);
     this.render();
   }

@@ -26,7 +26,7 @@ export function renderAnalysing(
   const title = document.createElement('p');
   title.textContent = `Analysing ${fileName}`;
   const stageText = document.createElement('p');
-  stageText.style.color = 'var(--color-muted)';
+  stageText.className = 'muted';
   stageText.textContent = STAGE_LABEL[stage];
 
   const cancelButton = document.createElement('button');
