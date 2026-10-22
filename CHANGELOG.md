@@ -34,3 +34,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (`npm run test:coverage`), wired into `scripts/verify.sh` and the new `web` CI job.
 - CI (`ci.yml`): added the `web` job (repo check, unit tests + coverage gate, conformance,
   rules sync/doc freshness).
+- Milestone 2 (Android core, TypeScript): `packages/core` now reads an `.aab`/`.apk` end to end
+  and reports every `AND-*` rule from the brief. Vendors AOSP aapt2's `Resources.proto`/
+  `Configuration.proto` and bundletool's `config.proto` (ADR 0006), generating TypeScript with
+  `buf` + `@bufbuild/protoc-gen-es` into `packages/core/src/gen/` (drift-checked in
+  `scripts/check-repo.ts`). Adds: an `aapt.pb.XmlNode` protobuf decoder for AAB module manifests
+  and a hand-written AXML (binary XML) chunk parser for APK manifests, both reading
+  `targetSdkVersion`/`minSdkVersion` by resource ID with a name fallback and treating a missing
+  `<uses-sdk>` or a preview-codename target SDK as "assumed"/"≥ latest" rather than an error;
+  form-factor inference from `<uses-feature>`; an ELF64 program-header reader and a native-library
+  walker (every module's `lib/<abi>/*.so`, plus each APK entry's zip-alignment data offset read
+  from its raw local file header); a `BundleConfig.pb` decoder; and the eight `AND-*` rule checks
+  (target-SDK-by-form-factor, the three 16 KB page-size checks — `PT_LOAD` alignment, the
+  `PT_GNU_RELRO` extent exception, zip alignment — plus their `BundleConfig` companion, the 64-bit
+  ABI-pairing check, and the native-code-absent info rule).
+- 17 synthetic Android fixtures with golden reports covering every `AND-*` rule's pass/fail
+  branches, the `2027-02-01` 16 KB severity boundary (asserted both sides against the same
+  fixture), the RELRO own-segment exemption, zip-alignment vs. compression gating, and
+  malformed-manifest/not-a-zip/no-manifest edge cases.

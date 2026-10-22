@@ -7,13 +7,17 @@ Check an iOS or Android build against the current App Store Connect and Google P
 
 > **Status: in development.** The web checker will be live at <https://umerasiflhe.github.io/store-ready-checker/> after Milestone 5. Progress is in [CHANGELOG.md](CHANGELOG.md).
 >
-> **Works today (Milestone 1 — iOS core):** `packages/core` reads a real `.ipa` end to end —
-> zip reading, binary and XML plist parsing, Mach-O analysis (symbols, bind opcodes, chained
-> fixups, Objective-C selectors, encryption detection), bundle discovery, required-reason API and
-> privacy-manifest checks, listed-SDK matching, and every `IOS-*` rule from the table above —
-> entirely in TypeScript, verified against 15 synthetic fixtures and a ≥90%/85% line/branch
-> coverage gate. There's no UI yet (Milestone 3) and no Swift CLI parity yet (Milestone 4); repo
-> scaffolding, tooling, and the v1 rule data landed in Milestone 0.
+> **Works today (Milestone 2 — iOS + Android core):** `packages/core` reads a real `.ipa`,
+> `.aab`, or `.apk` end to end, entirely in TypeScript. iOS: zip reading, binary and XML plist
+> parsing, Mach-O analysis (symbols, bind opcodes, chained fixups, Objective-C selectors,
+> encryption detection), bundle discovery, required-reason API and privacy-manifest checks,
+> listed-SDK matching. Android: an `aapt.pb.XmlNode` protobuf decoder (AAB) and a binary-XML
+> (AXML) decoder (APK) for `AndroidManifest.xml`, form-factor inference, an ELF64 program-header
+> reader and native-library walker, zip-alignment and `BundleConfig.pb` checks for the 16 KB
+> page-size rules. Every `IOS-*` and `AND-*` rule from the table below is wired up, verified
+> against 32 synthetic fixtures and a ≥90%/85% line/branch coverage gate. There's no UI yet
+> (Milestone 3) and no Swift CLI parity yet (Milestone 4); repo scaffolding, tooling, and the v1
+> rule data landed in Milestone 0.
 
 ## What it checks
 
