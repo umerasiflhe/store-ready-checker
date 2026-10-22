@@ -1,4 +1,6 @@
+import type { AndroidFacts } from '../android/analyze.ts';
 import type { IosFacts } from '../ios/analyze.ts';
+import { ANDROID_RULE_CHECKS } from './checks/android.ts';
 import { IOS_RULE_CHECKS, type IosCheckSeeds } from './checks/ios.ts';
 import type { Finding, Rule, RuleTimelineEntry, RulesFile, Severity } from './types.ts';
 
@@ -78,6 +80,26 @@ export function evaluateIosRules(
       continue;
     }
     findings.push(...check(facts, rule, asOf, seeds));
+  }
+  return findings;
+}
+
+/** Evaluates every `platform: "android"` rule in `rulesFile` against `facts`, "as of" `asOf`. */
+export function evaluateAndroidRules(
+  facts: AndroidFacts,
+  rulesFile: RulesFile,
+  asOf: string,
+): Finding[] {
+  const findings: Finding[] = [];
+  for (const rule of rulesFile.rules) {
+    if (rule.platform !== 'android') {
+      continue;
+    }
+    const check = ANDROID_RULE_CHECKS[rule.id];
+    if (!check) {
+      continue;
+    }
+    findings.push(...check(facts, rule, asOf));
   }
   return findings;
 }
