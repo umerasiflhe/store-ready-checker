@@ -93,6 +93,25 @@ describe('AND-TSDK-001', () => {
     expect(findingsFor('AND-TSDK-001', passing)).toHaveLength(0);
   });
 
+  it('prefers an explicit formFactorOverride over the manifest-inferred form factor', () => {
+    // No usesFeatures declared, so inference alone would treat this as phone/tablet (min 36).
+    const data = facts({
+      modules: [
+        moduleFacts({ manifest: manifest({ targetSdkVersion: { kind: 'released', value: 34 } }) }),
+      ],
+    });
+    expect(
+      evaluateAndroidRules(data, rulesFile, '2026-10-20').filter(
+        (f) => f.ruleId === 'AND-TSDK-001',
+      ),
+    ).toHaveLength(1);
+
+    const overridden = evaluateAndroidRules(data, rulesFile, '2026-10-20', {
+      formFactorOverride: 'tv',
+    }).filter((f) => f.ruleId === 'AND-TSDK-001');
+    expect(overridden).toHaveLength(0);
+  });
+
   it('never flags a preview codename targetSdkVersion', () => {
     const data = facts({
       modules: [

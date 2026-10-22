@@ -3,7 +3,14 @@ import { describe, expect, it } from 'vitest';
 import listedSdksJson from '../../../rules/apple-listed-sdks.json' with { type: 'json' };
 import requiredReasonApisJson from '../../../rules/apple-required-reason-apis.json' with { type: 'json' };
 import rulesJson from '../../../rules/rules.json' with { type: 'json' };
-import { analyzeIpa, type AnalyzeIpaOptions } from './index.ts';
+import {
+  analyzeIosBundles,
+  analyzeIpa,
+  buildReport,
+  evaluateIosRules,
+  ZipArchive,
+  type AnalyzeIpaOptions,
+} from './index.ts';
 import { parseListedSdksSeed } from './ios/listedSdks.ts';
 import { parseRequiredReasonSeed } from './ios/requiredReason.ts';
 import { parseRulesFile } from './rules/types.ts';
@@ -114,5 +121,86 @@ describe('analyzeIpa', () => {
     });
     expect(result.ok).toBe(false);
     expect(result.ok ? undefined : result.error.code).toBe('NO_PAYLOAD');
+  });
+});
+
+describe('the parse/evaluate split used by the web worker', () => {
+  it('produces the same report as analyzeIpa when composed manually', async () => {
+    const blob = await buildZip({
+      'Payload/MyApp.app/Info.plist': infoPlist({
+        CFBundleIdentifier: 'com.example.app',
+        CFBundleShortVersionString: '2.3.0',
+        CFBundleVersion: '45',
+        MinimumOSVersion: '15.0',
+        DTXcode: '2600',
+        DTPlatformVersion: '26.0',
+      }),
+    });
+
+    const oneShot = await analyzeIpa(new BlobByteSource(blob), {
+      ...baseOptions,
+      fileName: 'MyApp.ipa',
+    });
+    expect(oneShot.ok).toBe(true);
+
+    const opened = await ZipArchive.open(new BlobByteSource(blob));
+    expect(opened.ok).toBe(true);
+    if (!opened.ok) return;
+    const archive = opened.value;
+    const factsResult = await analyzeIosBundles(archive, requiredReasonApisResult.value);
+    await archive.close();
+    expect(factsResult.ok).toBe(true);
+    if (!factsResult.ok) return;
+
+    const findings = evaluateIosRules(factsResult.value, rulesFileResult.value, '2026-10-20', {
+      listedSdks: listedSdksResult.value,
+      requiredReasonApis: requiredReasonApisResult.value,
+    });
+    const mainApp = factsResult.value.bundles.find((bundle) => bundle.kind === 'app');
+    const composed = buildReport({
+      tool: {
+        name: 'store-ready',
+        version: '0.1.0',
+        rulesVersion: rulesFileResult.value.rulesVersion,
+      },
+      asOf: '2026-10-20',
+      input: { fileName: 'MyApp.ipa', sizeBytes: blob.size, kind: 'ipa' },
+      app: {
+        platform: 'ios',
+        id: mainApp?.info.bundleIdentifier ?? '',
+        version: mainApp?.info.shortVersionString ?? '',
+        build: mainApp?.info.bundleVersion ?? '',
+      },
+      findings,
+    });
+
+    expect(oneShot.ok && composed).toEqual(oneShot.ok ? oneShot.value : undefined);
+  });
+
+  it('re-evaluating cached facts with a different asOf changes findings without re-reading the archive', async () => {
+    const blob = await buildZip({
+      'Payload/MyApp.app/Info.plist': infoPlist({
+        CFBundleIdentifier: 'com.example.app',
+        DTXcode: '1640',
+        DTSDKName: 'iphoneos18.5',
+      }),
+    });
+    const opened = await ZipArchive.open(new BlobByteSource(blob));
+    expect(opened.ok).toBe(true);
+    if (!opened.ok) return;
+    const archive = opened.value;
+    const factsResult = await analyzeIosBundles(archive, requiredReasonApisResult.value);
+    await archive.close();
+    expect(factsResult.ok).toBe(true);
+    if (!factsResult.ok) return;
+
+    const seeds = {
+      listedSdks: listedSdksResult.value,
+      requiredReasonApis: requiredReasonApisResult.value,
+    };
+    const before = evaluateIosRules(factsResult.value, rulesFileResult.value, '2026-01-01', seeds);
+    const after = evaluateIosRules(factsResult.value, rulesFileResult.value, '2026-10-20', seeds);
+    expect(before.find((f) => f.ruleId === 'IOS-SDK-001')?.severity).toBe('info');
+    expect(after.find((f) => f.ruleId === 'IOS-SDK-001')?.severity).toBe('error');
   });
 });

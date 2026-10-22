@@ -1,16 +1,22 @@
 import type { AndroidFacts } from '../../android/analyze.ts';
 import { primaryModule } from '../../android/analyze.ts';
 import { PT_GNU_RELRO, PT_LOAD, type ProgramHeader } from '../../android/elf.ts';
-import { inferFormFactor } from '../../android/formFactor.ts';
+import { inferFormFactor, type FormFactor } from '../../android/formFactor.ts';
 import type { TargetSdkVersion } from '../../android/manifest.ts';
 import type { NativeLibFacts } from '../../android/nativeLibs.ts';
 import { buildFinding, resolveTimelineSeverity } from '../engine.ts';
 import type { Finding, Rule } from '../types.ts';
 
+export interface AndroidRuleCheckOptions {
+  /** Overrides the manifest-inferred form factor (brief §3.3: user- or `--form-factor`-selected). */
+  readonly formFactorOverride?: FormFactor;
+}
+
 export type AndroidRuleCheck = (
   facts: AndroidFacts,
   rule: Rule,
   asOf: string,
+  options?: AndroidRuleCheckOptions,
 ) => readonly Finding[];
 
 const SIXTEEN_K_ABIS = new Set(['arm64-v8a', 'x86_64']);
@@ -51,10 +57,17 @@ function relevantNativeLibs(
   return facts.nativeLibs.libraries.filter((lib) => abis.has(lib.abi));
 }
 
-function checkAndTsdk001(facts: AndroidFacts, rule: Rule, asOf: string): Finding[] {
+function checkAndTsdk001(
+  facts: AndroidFacts,
+  rule: Rule,
+  asOf: string,
+  options?: AndroidRuleCheckOptions,
+): Finding[] {
   const target = targetSdkOf(facts);
   if (!target || target.kind === 'preview') return [];
-  const formFactor = inferFormFactor(primaryModule(facts)?.manifest.usesFeatures ?? []);
+  const formFactor =
+    options?.formFactorOverride ??
+    inferFormFactor(primaryModule(facts)?.manifest.usesFeatures ?? []);
   const byFormFactor = rule.parameters?.targetSdkByFormFactor;
   const required =
     byFormFactor && typeof byFormFactor === 'object' && !Array.isArray(byFormFactor)

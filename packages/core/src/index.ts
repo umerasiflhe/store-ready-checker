@@ -163,3 +163,17 @@ export type {
 export type { ByteSource } from './zip/byteSource.ts';
 export { BlobByteSource } from './zip/byteSource.ts';
 export type { ParseError, Result } from './util/result.ts';
+
+// The split below lets a long-lived caller (the web worker) parse a build once and re-evaluate
+// rules cheaply afterwards (e.g. on an "as of" date or form-factor change) without re-reading the
+// archive. `analyzeIpa`/`analyzeAab`/`analyzeApk` above remain the simple one-shot entry points.
+export { analyzeIosBundles } from './ios/analyze.ts';
+export type { IosCheckSeeds } from './rules/checks/ios.ts';
+export { analyzeAndroidBundle, primaryModule } from './android/analyze.ts';
+export type { AndroidRuleCheckOptions } from './rules/checks/android.ts';
+export { evaluateIosRules, evaluateAndroidRules } from './rules/engine.ts';
+export { buildReport } from './report/build.ts';
+export { ZipArchive } from './zip/centralDirectory.ts';
+export type { FormFactor } from './android/formFactor.ts';
+export { inferFormFactor } from './android/formFactor.ts';
+export { reportToMarkdown } from './report/markdown.ts';

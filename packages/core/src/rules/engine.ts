@@ -1,8 +1,10 @@
 import type { AndroidFacts } from '../android/analyze.ts';
 import type { IosFacts } from '../ios/analyze.ts';
-import { ANDROID_RULE_CHECKS } from './checks/android.ts';
+import { ANDROID_RULE_CHECKS, type AndroidRuleCheckOptions } from './checks/android.ts';
 import { IOS_RULE_CHECKS, type IosCheckSeeds } from './checks/ios.ts';
 import type { Finding, Rule, RuleTimelineEntry, RulesFile, Severity } from './types.ts';
+
+export type { AndroidRuleCheckOptions };
 
 export interface ResolvedSeverity {
   readonly severity: Severity;
@@ -84,11 +86,14 @@ export function evaluateIosRules(
   return findings;
 }
 
-/** Evaluates every `platform: "android"` rule in `rulesFile` against `facts`, "as of" `asOf`. */
+/** Evaluates every `platform: "android"` rule in `rulesFile` against `facts`, "as of" `asOf`.
+ * `options.formFactorOverride`, when set, takes precedence over the manifest-inferred form
+ * factor (brief §3.3: the UI and the future CLI `--form-factor` flag both need this). */
 export function evaluateAndroidRules(
   facts: AndroidFacts,
   rulesFile: RulesFile,
   asOf: string,
+  options?: AndroidRuleCheckOptions,
 ): Finding[] {
   const findings: Finding[] = [];
   for (const rule of rulesFile.rules) {
@@ -99,7 +104,7 @@ export function evaluateAndroidRules(
     if (!check) {
       continue;
     }
-    findings.push(...check(facts, rule, asOf));
+    findings.push(...check(facts, rule, asOf, options));
   }
   return findings;
 }
