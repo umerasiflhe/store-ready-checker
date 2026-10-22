@@ -67,7 +67,12 @@ function checkAndTsdk001(facts: AndroidFacts, rule: Rule, asOf: string): Finding
     buildFinding(rule, resolved, {
       title: `targetSdkVersion ${String(target.value)} is below the required ${String(required)} for ${formFactor}`,
       message: 'Google Play requires targetSdkVersion to meet the minimum for this form factor.',
-      evidence: { targetSdkVersion: target.value, formFactor, required },
+      evidence: {
+        targetSdkVersion: target.value,
+        targetSdkAssumed: primaryModule(facts)?.manifest.targetSdkAssumed ?? false,
+        formFactor,
+        required,
+      },
     }),
   ];
 }
@@ -88,7 +93,10 @@ function checkAndTsdk002(facts: AndroidFacts, rule: Rule, asOf: string): Finding
     buildFinding(rule, resolved, {
       title: `targetSdkVersion ${String(target.value)} is below ${String(minimum)}`,
       message: `Google Play recommends targetSdkVersion stay at least ${String(minimum)} to remain visible to new users.`,
-      evidence: { targetSdkVersion: target.value },
+      evidence: {
+        targetSdkVersion: target.value,
+        targetSdkAssumed: primaryModule(facts)?.manifest.targetSdkAssumed ?? false,
+      },
     }),
   ];
 }
