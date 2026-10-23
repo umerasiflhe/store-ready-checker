@@ -143,6 +143,13 @@ public struct ReportSummary: Codable, Sendable, Equatable {
   public let errors: Int
   public let warnings: Int
   public let infos: Int
+
+  public init(status: ReportStatus, errors: Int, warnings: Int, infos: Int) {
+    self.status = status
+    self.errors = errors
+    self.warnings = warnings
+    self.infos = infos
+  }
 }
 
 public struct Report: Codable, Sendable {
@@ -152,4 +159,20 @@ public struct Report: Codable, Sendable {
   public let app: ReportApp
   public let summary: ReportSummary
   public let findings: [Finding]
+
+  public init(
+    tool: ReportTool,
+    asOf: String,
+    input: ReportInput,
+    app: ReportApp,
+    summary: ReportSummary,
+    findings: [Finding]
+  ) {
+    self.tool = tool
+    self.asOf = asOf
+    self.input = input
+    self.app = app
+    self.summary = summary
+    self.findings = findings
+  }
 }

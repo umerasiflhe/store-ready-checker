@@ -5,6 +5,7 @@ import StoreReadyCore
 struct StoreReady: ParsableCommand {
   static let configuration = CommandConfiguration(
     commandName: "storeready",
-    version: ToolInfo.version
+    version: ToolInfo.version,
+    subcommands: [Check.self, RulesCommand.self]
   )
 }
