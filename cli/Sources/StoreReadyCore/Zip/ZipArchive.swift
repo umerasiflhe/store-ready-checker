@@ -29,6 +29,8 @@ public final class ZipArchive {
   private let foundationArchive: Archive
   public let entries: [ZipEntry]
 
+  public var size: Int { source.size }
+
   private init(source: FileByteSource, foundationArchive: Archive, entries: [ZipEntry]) {
     self.source = source
     self.foundationArchive = foundationArchive
