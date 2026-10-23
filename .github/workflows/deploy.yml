@@ -1,0 +1,130 @@
+name: Deploy
+
+# Publishes apps/web to GitHub Pages once CI is green on main, then smoke-tests the live URL with
+# the same Playwright privacy and analysis specs that gate every commit.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: apps/web/dist
+
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  smoke:
+    name: smoke
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      BASE_URL: ${{ needs.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: CSP is present in the deployed HTML
+        run: |
+          set -euo pipefail
+          # Pages' CDN can serve the previous build for a short while after a deploy.
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fsSL "$BASE_URL" | grep -q 'http-equiv="Content-Security-Policy"'; then
+              echo "CSP meta tag found at $BASE_URL"
+              exit 0
+            fi
+            echo "attempt $attempt: CSP not found yet; retrying in 10 s"
+            sleep 10
+          done
+          echo "::error::No Content-Security-Policy meta tag at $BASE_URL"
+          exit 1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Make apt time out and retry stalled downloads
+        # The runner's Azure apt mirror sometimes stalls mid-download; apt's default has no
+        # connection timeout, so `playwright install-deps` would hang until the job timeout.
+        run: |
+          printf 'Acquire::http::Timeout "30";\nAcquire::https::Timeout "30";\nAcquire::Retries "5";\n' \
+            | sudo tee /etc/apt/apt.conf.d/99-ci-network > /dev/null
+
+      - name: Install Chromium
+        timeout-minutes: 10
+        run: npx playwright install --with-deps chromium
+
+      - name: Smoke test the live site
+        run: npx playwright test -c e2e/playwright.config.ts --project=chromium analyze.spec.ts privacy.spec.ts
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: smoke-playwright-report
+          path: playwright-report/
+          retention-days: 7
