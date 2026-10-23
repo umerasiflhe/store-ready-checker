@@ -1,39 +1,19 @@
-// Brief §7.4: runs the TS core and the Swift CLI (`storeready check --format json --as-of
-// <date>`) on every fixture, normalises (drops `tool.version`, which legitimately differs
-// between the two implementations), and diffs the two outputs against each other. Any
-// difference fails CI — this is the parity gate ADR 0004 promised when it made the Swift CLI an
-// independent reimplementation rather than a wrapper.
-//
-// Skipped (exit 0) when there's no Swift toolchain to build against: non-macOS runners, or a
-// checkout before `cli/Package.swift` existed (Milestones 1-3), matching `scripts/verify.sh`'s
-// own Swift-tests gating.
-import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { isDeepStrictEqual } from 'node:util';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { TOOL_VERSION } from '../fixtures/helpers/toolVersion.ts';
-import { analyzeAab, analyzeApk, analyzeIpa } from '../packages/core/src/index.ts';
-import { parseListedSdksSeed, type ListedSdksSeed } from '../packages/core/src/ios/listedSdks.ts';
-import {
-  parseRequiredReasonSeed,
-  type RequiredReasonSeed,
-} from '../packages/core/src/ios/requiredReason.ts';
-import { parseRulesFile, type RulesFile } from '../packages/core/src/rules/types.ts';
 import type { Report } from '../packages/core/src/report/types.ts';
-import type { Result } from '../packages/core/src/util/result.ts';
-import { BlobByteSource } from '../packages/core/src/zip/byteSource.ts';
+import { fixtureFilePath, readFixtureBlob } from '../fixtures/helpers/loadFixture.ts';
 import {
-  fixtureFilePath,
-  loadListedSdks,
-  loadRequiredReasonApis,
-  loadRulesData,
-  readFixtureBlob,
-} from '../fixtures/helpers/loadFixture.ts';
+  analyzeWithCore,
+  buildSwiftCli,
+  loadRuleData,
+  normalizeReport,
+  runSwiftCli,
+} from './lib/core-report.ts';
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const cliDir = join(repoRoot, 'cli');
-const cliExecutable = join(cliDir, '.build', 'release', 'storeready');
 
 interface FixtureCase {
   readonly fileName: string;
@@ -92,73 +72,13 @@ const FIXTURES: readonly FixtureCase[] = [
   fixture('android-apk-no-manifest.apk'),
 ];
 
-function normalizeReport(report: Report): Report {
-  return { ...report, tool: { ...report.tool, version: '' } };
-}
-
-function buildSwiftCli(): void {
-  const build = spawnSync(
-    'swift',
-    ['build', '--package-path', 'cli', '-c', 'release', '--product', 'storeready'],
-    { cwd: repoRoot, stdio: 'inherit' },
-  );
-  if (build.status !== 0) {
-    throw new Error('swift build --product storeready failed');
-  }
-  if (!existsSync(cliExecutable)) {
-    throw new Error(`expected a built binary at ${cliExecutable}`);
-  }
-}
-
-function runSwiftCli(fileName: string, asOf: string): { status: number; stdout: string } {
-  const run = spawnSync(
-    cliExecutable,
-    ['check', fixtureFilePath(fileName), '--format', 'json', '--as-of', asOf],
-    { encoding: 'utf8' },
-  );
-  return { status: run.status ?? -1, stdout: run.stdout };
-}
-
-async function analyzeWithCore(
-  fileName: string,
-  asOf: string,
-  rulesFile: RulesFile,
-  listedSdks: ListedSdksSeed,
-  requiredReasonApis: RequiredReasonSeed,
-): Promise<Result<Report>> {
-  const blob = readFixtureBlob(fileName);
-  if (fileName.endsWith('.ipa')) {
-    return analyzeIpa(new BlobByteSource(blob), {
-      fileName,
-      asOf,
-      toolVersion: TOOL_VERSION,
-      rules: rulesFile,
-      requiredReasonApis,
-      listedSdks,
-    });
-  }
-  const analyze = fileName.endsWith('.aab') ? analyzeAab : analyzeApk;
-  return analyze(new BlobByteSource(blob), {
-    fileName,
-    asOf,
-    toolVersion: TOOL_VERSION,
-    rules: rulesFile,
-  });
-}
-
 async function main(): Promise<void> {
   if (process.platform !== 'darwin' || !existsSync(join(cliDir, 'Package.swift'))) {
     console.log('Conformance skipped: Swift CLI not buildable here (need macOS and cli/).');
     return;
   }
 
-  const rulesFileResult = parseRulesFile(loadRulesData());
-  if (!rulesFileResult.ok) throw new Error('rules/rules.json is invalid');
-  const listedSdksResult = parseListedSdksSeed(loadListedSdks());
-  if (!listedSdksResult.ok) throw new Error('rules/apple-listed-sdks.json is invalid');
-  const requiredReasonApisResult = parseRequiredReasonSeed(loadRequiredReasonApis());
-  if (!requiredReasonApisResult.ok)
-    throw new Error('rules/apple-required-reason-apis.json is invalid');
+  const ruleData = loadRuleData();
 
   console.log('Building storeready in release mode...');
   buildSwiftCli();
@@ -166,14 +86,8 @@ async function main(): Promise<void> {
   const failures: string[] = [];
 
   for (const { fileName, asOf, goldenName } of FIXTURES) {
-    const coreResult = await analyzeWithCore(
-      fileName,
-      asOf,
-      rulesFileResult.value,
-      listedSdksResult.value,
-      requiredReasonApisResult.value,
-    );
-    const cli = runSwiftCli(fileName, asOf);
+    const coreResult = await analyzeWithCore(readFixtureBlob(fileName), fileName, asOf, ruleData);
+    const cli = runSwiftCli(fixtureFilePath(fileName), asOf);
 
     if (!coreResult.ok) {
       if (cli.status !== 2) {
