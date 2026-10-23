@@ -82,3 +82,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   now.
 - CI (`ci.yml`): `web` job gained a build step, `size-limit`, and web-samples freshness; new
   `e2e` job runs the full Playwright suite and uploads the report on failure.
+- Milestone 4 (Swift CLI): per ADR 0004, `cli/` is an independent reimplementation of
+  `packages/core`'s parsers and rule checks — not a wrapper — in `StoreReadyCore`
+  (library) and `storeready` (executable), both under Swift 6 strict concurrency.
+  Mirrors the TS module layout 1:1 (`Util`, `Zip`, `Plist`, `iOS`, `Android`, `Rules`,
+  `Report`), with two deliberate, brief-sanctioned deviations: `Foundation.PropertyListSerialization`
+  instead of a hand-rolled plist decoder, and plain `Codable` instead of a port of the
+  hand-rolled `rules.json` validator (both only process trusted, schema-validated repo
+  data, unlike the zip/plist/Mach-O/ELF/AXML/AAB-manifest parsers, which still follow the
+  strict never-throw `Result` pattern for arbitrary uploaded files).
+- `swift-protobuf`-generated Swift for the same vendored `.proto` files TypeScript already
+  generates from (ADR 0006), wired into `scripts/gen-proto.ts` and drift-checked by
+  `scripts/check-repo.ts`; `ZIPFoundation` for zip listing/extraction, with a hand-read raw
+  local file header for the `AND-16K-003` zip-alignment check (the TS implementation
+  deliberately doesn't trust a library's central-directory copy of that field, and neither
+  does this one).
+- `storeready check <file> [--format text|json|markdown] [--as-of] [--form-factor]
+[--fail-on] [--no-color]` and `storeready rules [--format text|json]`, per brief §6.6's
+  interface. Exit codes `0`/`1`/`2` per the brief's table, with one documented, scoped
+  deviation: swift-argument-parser's own flag-syntax validation errors (not this tool's own
+  logic) exit `64` (`EX_USAGE`) rather than `2`, since that mapping isn't public API.
+- 82 Swift tests (Swift Testing): parser/rule-check unit tests against the same real
+  fixtures the TS side uses, full golden-JSON structural comparisons for every iOS/Android
+  fixture, and black-box CLI integration tests that spawn the built `storeready` binary
+  against all 32 fixtures and assert exit codes and JSON output.
+- `scripts/conformance.ts` is now a real parity gate: builds `storeready` in release mode,
+  runs both it and the TS core on every fixture, and diffs their JSON output (`tool.version`
+  normalized out). New CI jobs `swift` and `conformance` (both `macos-26`) run this on every
+  push and pull request.

@@ -7,17 +7,20 @@ Check an iOS or Android build against the current App Store Connect and Google P
 
 > **Status: in development.** The web checker will be live at <https://umerasiflhe.github.io/store-ready-checker/> after Milestone 5. Progress is in [CHANGELOG.md](CHANGELOG.md).
 >
-> **Works today (Milestone 3 — web app):** drop (or try a sample) `.ipa`, `.aab`, or `.apk` at
-> `npm run dev`/`npm run build` + `npm run preview` and get a full report, entirely client-side —
-> a Web Worker parses the zip's central directory once, evaluates every `IOS-*`/`AND-*` rule
-> below, and lets you change the "Check as of" date or an Android form-factor override and
-> re-evaluate instantly without re-reading the file. Results are filterable by severity, with
-> evidence/fix-steps/sources per finding, copy-as-Markdown, and download-JSON. Installable
-> offline PWA; CSP blocks any outgoing request. Verified by 80 Playwright tests across
-> Chromium/Firefox/WebKit/a mobile viewport (drop/sample flows, keyboard-only use, zero
-> accessibility violations, zero network requests beyond same-origin static assets, a 500 MB
-> file analysed in under 10 s) plus the 32 synthetic-fixture/unit-test suite from Milestones 1–2.
-> No Swift CLI parity yet (Milestone 4); not deployed to Pages yet (Milestone 5).
+> **Works today (Milestone 4 — web app + Swift CLI):** drop (or try a sample) `.ipa`, `.aab`, or
+> `.apk` at `npm run dev`/`npm run build` + `npm run preview` and get a full report, entirely
+> client-side — a Web Worker parses the zip's central directory once, evaluates every
+> `IOS-*`/`AND-*` rule below, and lets you change the "Check as of" date or an Android form-factor
+> override and re-evaluate instantly without re-reading the file. Results are filterable by
+> severity, with evidence/fix-steps/sources per finding, copy-as-Markdown, and download-JSON.
+> Installable offline PWA; CSP blocks any outgoing request. The same checks also ship as a Swift
+> CLI (`storeready check <file> --format text|json|markdown`, `storeready rules`) with
+> byte-for-byte JSON parity, verified by `scripts/conformance.ts` on every fixture. Verified by 80
+> Playwright tests across Chromium/Firefox/WebKit/a mobile viewport (drop/sample flows,
+> keyboard-only use, zero accessibility violations, zero network requests beyond same-origin
+> static assets, a 500 MB file analysed in under 10 s), 82 Swift tests (including CLI integration
+> tests against the built binary), and the 32-fixture TS/Swift conformance suite. Not deployed to
+> Pages yet; no prebuilt CLI binary release yet (both Milestone 5).
 
 ## What it checks
 
