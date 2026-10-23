@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-23
+
+First stable release. Every rule was re-audited against its official source, and the fixes are
+below: per-form-factor Play deadlines for target SDK, 16 KB page sizes and 64-bit code, and
+required-reason APIs that Apple lists under two categories. The web app gains PNG icons and an
+Open Graph image, the README gains demo GIFs and its final layout, and the end-to-end suite now
+also runs on an iPhone profile.
+
 ### Added
 
 - The end-to-end suite also runs on an iPhone 15 (mobile WebKit) profile, offline test included.
@@ -202,5 +210,6 @@ archive`) and real `.aab`s with AGP 9.4 + NDK r28 from `fixtures/real-builds/`, 
 - The Playwright specs navigated to `/`, which resolves to the origin root, so they couldn't run
   against GitHub Pages' `/store-ready-checker/` path.
 
-[Unreleased]: https://github.com/umerasiflhe/store-ready-checker/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/umerasiflhe/store-ready-checker/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/umerasiflhe/store-ready-checker/compare/v0.9.0...v1.0.0
 [0.9.0]: https://github.com/umerasiflhe/store-ready-checker/releases/tag/v0.9.0

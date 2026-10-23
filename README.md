@@ -11,18 +11,18 @@ Check an iOS or Android build against the current App Store Connect and Google P
 [![Release](https://img.shields.io/github/v/release/umerasiflhe/store-ready-checker)](https://github.com/umerasiflhe/store-ready-checker/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> **Status: pre-release (v0.9.0).** The web checker is live and the CLI ships as prebuilt binaries;
-> v1.0.0 follows a full re-audit of every rule against its official source. Progress is in
-> [CHANGELOG.md](CHANGELOG.md).
+> **Status: released (v1.0.0).** Every rule was re-audited against its official source on
+> 2026-10-23. Changes are in [CHANGELOG.md](CHANGELOG.md).
 >
 > **Works today:**
 >
 > - The web checker on GitHub Pages: drop an `.ipa`, `.aab` or `.apk` (or try a sample), get a
 >   verdict with evidence, fix steps and sources for every finding, change the "Check as of" date
->   to see upcoming deadlines, and export Markdown or JSON. It works offline once loaded, and a
->   CSP plus an automated test after every deploy prove nothing is sent anywhere.
+>   to see upcoming deadlines, override the Android form factor, and export Markdown or JSON. It
+>   installs as an app, works offline once loaded, and a CSP plus an automated test after every
+>   deploy prove nothing is sent anywhere.
 > - The `storeready` CLI for macOS (universal) and Linux, producing JSON byte-identical to the web
->   app's on every fixture.
+>   app's on every fixture, for use in CI.
 > - Checked against real builds every week: an Xcode 26 `.ipa` and Gradle/NDK r28 `.aab`s built
 >   from scratch in CI.
 > - A weekly watch on Apple's and Google's requirement pages that opens an issue when one changes.
@@ -63,7 +63,7 @@ Download the binary for your platform from [GitHub Releases](https://github.com/
 and check it against `SHA256SUMS`:
 
 ```bash
-v=0.9.0
+v=1.0.0
 curl -fsSLO "https://github.com/umerasiflhe/store-ready-checker/releases/download/v$v/storeready-$v-macos-universal.tar.gz"
 curl -fsSLO "https://github.com/umerasiflhe/store-ready-checker/releases/download/v$v/SHA256SUMS"
 shasum -a 256 -c SHA256SUMS --ignore-missing
@@ -97,7 +97,7 @@ on `ubuntu-latest`):
 ```yaml
 - name: Check the build with Store Ready
   run: |
-    v=0.9.0
+    v=1.0.0
     base="https://github.com/umerasiflhe/store-ready-checker/releases/download/v$v"
     curl -fsSLO "$base/storeready-$v-macos-universal.tar.gz"
     curl -fsSLO "$base/SHA256SUMS"
