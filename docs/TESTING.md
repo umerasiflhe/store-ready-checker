@@ -26,8 +26,7 @@ into the gitignored `fixtures/generated/`, never committed.
 
 ## Coverage gate
 
-`packages/core` requires ≥ 90% line coverage and ≥ 85% branch coverage once its parsers and rule
-checks land (Milestone 1 onward). Never weaken this gate to make a build pass.
+`packages/core` requires ≥ 90% line coverage and ≥ 85% branch coverage. Never weaken this gate to make a build pass.
 
 ## Running everything locally
 

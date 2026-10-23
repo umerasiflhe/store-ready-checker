@@ -32,11 +32,11 @@ JSON output. Full spec: `docs/BUILD_BRIEF.md`.
 rules/            rules.json + seed data: single source of truth, dated and sourced
 schema/           report.schema.json, rules.schema.json
 packages/core/    TS, no DOM: zip reading, parsers, rules engine, report builder
-apps/web/         Vite + vanilla TypeScript UI, Web Worker, PWA (Milestone 3)
+apps/web/         Vite + vanilla TypeScript UI, Web Worker, PWA
 cli/              Swift package: StoreReadyCore (library) + storeready (executable)
-proto/            vendored aapt2 / bundletool .proto files (Milestone 2)
+proto/            vendored aapt2 / bundletool .proto files
 fixtures/         generators (TS), generated fixtures, golden expected reports
-e2e/              Playwright tests (specs arrive Milestone 3)
+e2e/              Playwright tests (also the post-deploy smoke test)
 scripts/          verify, check-repo, sync-rules, gen-rules-doc, conformance, test-git-hooks
 docs/             SPEC, ARCHITECTURE, RULES (generated), TESTING, CI-CD, PRIVACY, adr/
 ```
@@ -44,15 +44,15 @@ docs/             SPEC, ARCHITECTURE, RULES (generated), TESTING, CI-CD, PRIVACY
 ## Commands
 
 - Install (and install git hooks): `npm ci`
-- Dev server (web app — arrives Milestone 3): `npm run dev`
+- Dev server (web app): `npm run dev`
 - Lint, zero warnings: `npm run lint` · fix: `npm run lint:fix`
 - Format: `npm run format` · check only: `npm run format:check`
 - Typecheck: `npm run typecheck`
 - Unit tests: `npm run test:unit` (alias `npm test`)
-- End-to-end tests (specs arrive Milestone 3): `npm run test:e2e`
+- End-to-end tests: `npm run test:e2e`
 - Swift build: `swift build --package-path cli` · test: `npm run test:swift`
-- Conformance (no-op until Milestone 4 ships a `check` command): `npx tsx scripts/conformance.ts`
-- Generate fixtures (generators arrive Milestones 1–2): `npx tsx fixtures/generators/<name>.ts`
+- Conformance (TS core vs Swift CLI JSON on every fixture): `npx tsx scripts/conformance.ts`
+- Generate fixtures: `npx tsx fixtures/generators/<name>.ts`
 - Sync rules into the Swift package resources: `npm run rules:sync`
 - Regenerate `docs/RULES.md` and the README rules table: `npm run rules:doc`
 - Everything CI checks, fast: `./scripts/verify.sh` (add `--full` for e2e + the git-hooks

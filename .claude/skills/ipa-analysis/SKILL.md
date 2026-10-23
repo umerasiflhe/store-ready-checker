@@ -26,9 +26,9 @@ hand-written reader. Write a dependency-free binary plist decoder with its own t
 Key `Info.plist` fields: `CFBundleIdentifier`, `CFBundleShortVersionString`, `CFBundleVersion`,
 `MinimumOSVersion`, `DTXcode` (4 digits: `major = floor(n / 100)`, so `1640` = 16.4, `2600` = 26.0),
 `DTXcodeBuild`, `DTSDKName` (e.g. `iphoneos26.0`), `DTPlatformVersion`, `DTPlatformName`.
-Cross-check `DTXcode` against the SDK version and report both as evidence. Confirm the exact
-`DTXcode` format against a real Xcode 26 build (the `real-builds.yml` workflow, Milestone 5) before
-relying on it.
+Cross-check `DTXcode` against the SDK version and report both as evidence. The format is
+confirmed by a real Xcode 26 build in `real-builds.yml`: `DTXcode` `2660`, `DTXcodeBuild` `17F113`,
+`DTSDKName` `iphoneos26.5`.
 
 ## Mach-O executable (`CFBundleExecutable`)
 

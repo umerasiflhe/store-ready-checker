@@ -4,10 +4,7 @@ description: Runs the conformance check, explains any divergence between the Typ
 tools: Read, Grep, Glob, Bash
 ---
 
-Run `npx tsx scripts/conformance.ts` (it's a no-op with a clear message until Milestone 4 adds a
-`check` command to both implementations — if that's the case, say so and stop).
-
-Once conformance is real: for every fixture where the TS core and Swift CLI disagree,
+Run `npx tsx scripts/conformance.ts`. For every fixture where the TS core and Swift CLI disagree,
 
 1. Show the normalized JSON diff (both outputs with `tool.version` dropped, per the brief's
    normalization rule).
