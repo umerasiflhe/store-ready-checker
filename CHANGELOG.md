@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- The end-to-end suite also runs on an iPhone 15 (mobile WebKit) profile, offline test included.
 - Demo GIFs in the README (web app and CLI), recorded by `scripts/record-demo/` (Playwright video
   plus ffmpeg, and a VHS tape). The repo check fails if a demo GIF is over 4 MB.
 - PNG app icons (192, 512, a maskable 512, and a 180 px `apple-touch-icon` for iOS home screens)
