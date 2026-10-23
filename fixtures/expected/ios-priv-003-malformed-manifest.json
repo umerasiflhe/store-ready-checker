@@ -26,6 +26,10 @@
           {
             "title": "Apple — Describing use of required reason API",
             "url": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api"
+          },
+          {
+            "title": "Apple — NSPrivacyAccessedAPIType",
+            "url": "https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype"
           }
         ]
       }

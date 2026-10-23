@@ -54,3 +54,25 @@ import Testing
   }
   #expect(seed.categories[0].reasonCodes == ["A"])
 }
+
+/// Mirrors the TS `undeclaredUsage (real seed)` cases in `requiredReason.test.ts`.
+@Test func undeclaredUsageAcceptsEitherCategoryForSharedApis() throws {
+  let json = loadRulesJSON("apple-required-reason-apis.json")
+  guard case .success(let seed) = parseRequiredReasonSeed(json) else {
+    Issue.record("expected the real seed file to parse")
+    return
+  }
+  let fileTimestamp = "NSPrivacyAccessedAPICategoryFileTimestamp"
+  let diskSpace = "NSPrivacyAccessedAPICategoryDiskSpace"
+  func undeclared(_ symbols: [String], _ declared: Set<String>, selectors: [String] = [])
+    -> [String]
+  {
+    let usage = detectRequiredReasonUsage(symbols: symbols, selectors: selectors, seed: seed)
+    return undeclaredUsage(usage, declared: declared, seed: seed).map(\.category)
+  }
+  #expect(undeclared(["_getattrlist"], []) == [fileTimestamp, diskSpace])
+  #expect(undeclared(["_getattrlist"], [diskSpace]).isEmpty)
+  #expect(undeclared(["_fgetattrlist"], [fileTimestamp]).isEmpty)
+  #expect(undeclared(["_getattrlist", "_statfs"], [fileTimestamp]) == [diskSpace])
+  #expect(undeclared([], [], selectors: ["fileModificationDate"]) == [fileTimestamp])
+}

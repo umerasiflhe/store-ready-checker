@@ -43,7 +43,12 @@
         {
           "title": "Apple — Describing use of required reason API",
           "url": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api",
-          "retrieved": "2026-10-20"
+          "retrieved": "2026-10-23"
+        },
+        {
+          "title": "Apple — NSPrivacyAccessedAPIType",
+          "url": "https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype",
+          "retrieved": "2026-10-23"
         }
       ],
       "fix": [
@@ -61,7 +66,12 @@
         {
           "title": "Apple — Describing use of required reason API",
           "url": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api",
-          "retrieved": "2026-10-20"
+          "retrieved": "2026-10-23"
+        },
+        {
+          "title": "Apple — NSPrivacyAccessedAPIType",
+          "url": "https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype",
+          "retrieved": "2026-10-23"
         }
       ],
       "fix": [
@@ -79,7 +89,12 @@
         {
           "title": "Apple — Describing use of required reason API",
           "url": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api",
-          "retrieved": "2026-10-20"
+          "retrieved": "2026-10-23"
+        },
+        {
+          "title": "Apple — NSPrivacyAccessedAPIType",
+          "url": "https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype",
+          "retrieved": "2026-10-23"
         }
       ],
       "fix": [

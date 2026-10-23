@@ -36,6 +36,7 @@ const IOS_FIXTURES = [
   'ios-old-minos.ipa',
   'ios-priv-001-missing-manifest.ipa',
   'ios-priv-002-missing-category.ipa',
+  'ios-priv-002-shared-api-declared.ipa',
   'ios-priv-003-bad-reason-code.ipa',
   'ios-priv-003-malformed-manifest.ipa',
   'ios-priv-004-listed-sdk-no-manifest.ipa',

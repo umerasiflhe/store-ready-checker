@@ -110,8 +110,10 @@ function collectDocCText(node: unknown, out: string[]): void {
   }
   if (node === null || typeof node !== 'object') return;
   for (const [key, value] of Object.entries(node)) {
-    if ((key === 'text' || key === 'code') && typeof value === 'string') out.push(value);
-    else if (key === 'code' && Array.isArray(value)) {
+    // `identifier` keeps inline links: Apple lists most required-reason APIs as references.
+    if ((key === 'text' || key === 'code' || key === 'identifier') && typeof value === 'string') {
+      out.push(value);
+    } else if (key === 'code' && Array.isArray(value)) {
       out.push(...value.filter((line): line is string => typeof line === 'string'));
     } else collectDocCText(value, out);
   }

@@ -81,3 +81,27 @@ export function detectRequiredReasonUsage(
   }
   return detected;
 }
+
+/**
+ * The detected usages that `declared` doesn't cover. Apple lists some APIs under more than one
+ * category (`getattrlist` is both FileTimestamp and DiskSpace), and declaring any one of those
+ * categories covers them, so a usage only counts while one of its matched APIs isn't listed under
+ * a declared category.
+ */
+export function undeclaredUsage(
+  usages: readonly DetectedRequiredReasonUsage[],
+  declared: ReadonlySet<string>,
+  seed: RequiredReasonSeed,
+): DetectedRequiredReasonUsage[] {
+  const declaredEvidence = seed.categories
+    .filter((category) => declared.has(category.type))
+    .map((category) => category.evidence);
+  const coveredSymbols = new Set(declaredEvidence.flatMap((evidence) => evidence.symbols));
+  const coveredSelectors = new Set(declaredEvidence.flatMap((evidence) => evidence.selectors));
+  return usages.filter(
+    (usage) =>
+      !declared.has(usage.category) &&
+      (usage.matchedSymbols.some((symbol) => !coveredSymbols.has(symbol)) ||
+        usage.matchedSelectors.some((selector) => !coveredSelectors.has(selector))),
+  );
+}

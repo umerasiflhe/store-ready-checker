@@ -1,7 +1,7 @@
 import type { BundleFacts, IosFacts } from '../../ios/analyze.ts';
 import { frameworkNameOf, isListedSdk, type ListedSdksSeed } from '../../ios/listedSdks.ts';
 import { declaredCategories, hasUnknownCategoryOrReason } from '../../ios/privacyManifest.ts';
-import type { RequiredReasonSeed } from '../../ios/requiredReason.ts';
+import { undeclaredUsage, type RequiredReasonSeed } from '../../ios/requiredReason.ts';
 import { compareVersions } from '../../util/version.ts';
 import { buildFinding, resolveTimelineSeverity } from '../engine.ts';
 import type { Finding, Rule } from '../types.ts';
@@ -118,14 +118,23 @@ function checkIosPriv001(facts: IosFacts, rule: Rule, asOf: string): Finding[] {
   return findings;
 }
 
-function checkIosPriv002(facts: IosFacts, rule: Rule, asOf: string): Finding[] {
+function checkIosPriv002(
+  facts: IosFacts,
+  rule: Rule,
+  asOf: string,
+  seeds: IosCheckSeeds,
+): Finding[] {
   const findings: Finding[] = [];
   for (const bundle of bundlesWithExecutables(facts)) {
     if (!bundle.privacyManifest || bundle.privacyManifest.malformed) {
       continue;
     }
     const declared = declaredCategories(bundle.privacyManifest);
-    const undeclared = bundle.requiredReasonUsage.filter((usage) => !declared.has(usage.category));
+    const undeclared = undeclaredUsage(
+      bundle.requiredReasonUsage,
+      declared,
+      seeds.requiredReasonApis,
+    );
     if (undeclared.length === 0) {
       continue;
     }

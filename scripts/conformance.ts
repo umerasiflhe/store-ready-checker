@@ -36,6 +36,7 @@ const FIXTURES: readonly FixtureCase[] = [
   fixture('ios-old-minos.ipa'),
   fixture('ios-priv-001-missing-manifest.ipa'),
   fixture('ios-priv-002-missing-category.ipa'),
+  fixture('ios-priv-002-shared-api-declared.ipa'),
   fixture('ios-priv-003-bad-reason-code.ipa'),
   fixture('ios-priv-003-malformed-manifest.ipa'),
   fixture('ios-priv-004-listed-sdk-no-manifest.ipa'),

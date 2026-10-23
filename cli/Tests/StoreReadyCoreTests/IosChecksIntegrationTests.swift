@@ -13,6 +13,7 @@ private let iosFixturesWithFindings = [
   "ios-appex-old-sdk",
   "ios-priv-001-missing-manifest",
   "ios-priv-002-missing-category",
+  "ios-priv-002-shared-api-declared",
   "ios-priv-003-bad-reason-code",
   "ios-priv-003-malformed-manifest",
   "ios-priv-004-listed-sdk-no-manifest",

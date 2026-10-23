@@ -66,7 +66,8 @@ Severity timeline:
 
 Sources:
 
-- [Apple — Describing use of required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) (retrieved 2026-10-20)
+- [Apple — Describing use of required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) (retrieved 2026-10-23)
+- [Apple — NSPrivacyAccessedAPIType](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype) (retrieved 2026-10-23)
 
 Fix:
 
@@ -83,7 +84,8 @@ Severity timeline:
 
 Sources:
 
-- [Apple — Describing use of required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) (retrieved 2026-10-20)
+- [Apple — Describing use of required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) (retrieved 2026-10-23)
+- [Apple — NSPrivacyAccessedAPIType](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype) (retrieved 2026-10-23)
 
 Fix:
 
@@ -100,7 +102,8 @@ Severity timeline:
 
 Sources:
 
-- [Apple — Describing use of required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) (retrieved 2026-10-20)
+- [Apple — Describing use of required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) (retrieved 2026-10-23)
+- [Apple — NSPrivacyAccessedAPIType](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype) (retrieved 2026-10-23)
 
 Fix:
 

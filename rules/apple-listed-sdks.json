@@ -1,8 +1,8 @@
 {
-  "retrieved": "2026-10-20",
-  "verified": false,
+  "retrieved": "2026-10-23",
+  "verified": true,
   "source": "https://developer.apple.com/support/third-party-SDK-requirements/",
-  "note": "Seed data from the brief's Appendix B. The rules-auditor agent must keep this in sync with Apple's published list; rules-watch.yml (Milestone 5) hashes the source page to detect drift.",
+  "note": "Apple's list of SDKs that require a privacy manifest and signature, verified by the rules-auditor pass on 2026-10-23 (Apple's single entry \"BoringSSL / openssl_grpc\" is split into two names). rules-watch.yml hashes the source page weekly to detect drift.",
   "frameworks": [
     "Abseil",
     "AFNetworking",

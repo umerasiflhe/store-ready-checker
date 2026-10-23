@@ -9,7 +9,13 @@
     {
       "url": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api",
       "fetchUrl": "https://developer.apple.com/tutorials/data/documentation/bundleresources/describing-use-of-required-reason-api.json",
-      "sha256": "0d303f5df51133fc6c44c0bd36b6fdcbcd4f352c145491da79df733bfe332455",
+      "sha256": "3b393eb3e28bca065408125d78f9098b73b10880bff800a83a4c522ca79ddfa6",
+      "checkedAt": "2026-10-23"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype",
+      "fetchUrl": "https://developer.apple.com/tutorials/data/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype.json",
+      "sha256": "91c92c60659724bb6c7680db3ed7a799e741bdf9a4fc0720e207ff4d737245ba",
       "checkedAt": "2026-10-23"
     },
     {

@@ -137,7 +137,8 @@ private func checkIosPriv002(
   for bundle in bundlesWithExecutables(facts) {
     guard let manifest = bundle.privacyManifest, !manifest.malformed else { continue }
     let declared = declaredCategories(manifest)
-    let undeclared = bundle.requiredReasonUsage.filter { !declared.contains($0.category) }
+    let undeclared = undeclaredUsage(
+      bundle.requiredReasonUsage, declared: declared, seed: seeds.requiredReasonApis)
     if undeclared.isEmpty { continue }
     let resolved = resolveTimelineSeverity(rule.timeline, asOf: asOf)
     findings.append(

@@ -1,8 +1,8 @@
 {
-  "retrieved": "2026-10-20",
-  "verified": false,
-  "source": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api",
-  "note": "Seed data from the brief's Appendix A. The rules-auditor agent must confirm every category, reason code, and symbol against Apple's documentation before v1.0, then set verified to true.",
+  "retrieved": "2026-10-23",
+  "verified": true,
+  "source": "https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype",
+  "note": "Categories, reason codes and APIs as listed on Apple's NSPrivacyAccessedAPIType reference (the describing-use-of-required-reason-api article links there). Verified by the rules-auditor pass on 2026-10-23. An API listed under several categories (getattrlist, fgetattrlist, getattrlistat) appears in each; declaring any one of them covers it.",
   "categories": [
     {
       "type": "NSPrivacyAccessedAPICategoryFileTimestamp",
@@ -22,7 +22,7 @@
           "_NSURLContentModificationDateKey",
           "_NSURLCreationDateKey"
         ],
-        "selectors": []
+        "selectors": ["fileModificationDate"]
       }
     },
     {
@@ -47,7 +47,10 @@
           "_NSURLVolumeAvailableCapacityKey",
           "_NSURLVolumeAvailableCapacityForImportantUsageKey",
           "_NSURLVolumeAvailableCapacityForOpportunisticUsageKey",
-          "_NSURLVolumeTotalCapacityKey"
+          "_NSURLVolumeTotalCapacityKey",
+          "_getattrlist",
+          "_fgetattrlist",
+          "_getattrlistat"
         ],
         "selectors": []
       }
