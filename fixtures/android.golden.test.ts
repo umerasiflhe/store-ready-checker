@@ -44,6 +44,23 @@ const ANDROID_FIXTURES: readonly AndroidFixtureCase[] = [
     '2027-02-01',
     'android-aab-16k-load-misaligned-error',
   ),
+  // Form-factor-specific 16 KB dates: TV from 2026-08-01, Wear OS from 2026-09-15.
+  fixture(
+    'android-aab-16k-tv-misaligned.aab',
+    '2026-07-31',
+    'android-aab-16k-tv-misaligned-warning',
+  ),
+  fixture('android-aab-16k-tv-misaligned.aab', '2026-08-01', 'android-aab-16k-tv-misaligned-error'),
+  fixture(
+    'android-aab-16k-wear-misaligned.aab',
+    '2026-09-14',
+    'android-aab-16k-wear-misaligned-warning',
+  ),
+  fixture(
+    'android-aab-16k-wear-misaligned.aab',
+    '2026-09-15',
+    'android-aab-16k-wear-misaligned-error',
+  ),
   fixture('android-aab-16k-relro-misaligned.aab'),
   fixture('android-aab-16k-relro-exempt.aab'),
   fixture('android-aab-16k-bundleconfig-missing-flag.aab'),

@@ -27,11 +27,14 @@ public struct RuleTimelineEntry: Codable, Sendable {
   public let from: String
   public let severity: Severity
   public let note: String?
+  /// When set, the entry only applies to apps of these form factors (Android).
+  public let formFactors: [String]?
 
-  public init(from: String, severity: Severity, note: String? = nil) {
+  public init(from: String, severity: Severity, note: String? = nil, formFactors: [String]? = nil) {
     self.from = from
     self.severity = severity
     self.note = note
+    self.formFactors = formFactors
   }
 }
 

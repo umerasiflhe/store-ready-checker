@@ -47,6 +47,13 @@ private func relevantNativeLibs(_ facts: AndroidFacts, _ abis: Set<String>) -> [
   facts.nativeLibs.libraries.filter { abis.contains($0.abi) }
 }
 
+/// An explicit override wins over the form factor inferred from the manifest's features.
+private func formFactorOf(_ facts: AndroidFacts, _ options: AndroidRuleCheckOptions?) -> FormFactor
+{
+  options?.formFactorOverride
+    ?? inferFormFactor(primaryModule(facts)?.manifest.usesFeatures ?? [])
+}
+
 /// The form factor (an explicit override wins over the manifest-inferred one) and the rule's
 /// `targetSdkByFormFactor` threshold for it, or nil when the rule has none for it.
 private func targetSdkRequirement(
@@ -54,9 +61,7 @@ private func targetSdkRequirement(
   _ rule: Rule,
   _ options: AndroidRuleCheckOptions?
 ) -> (formFactor: FormFactor, required: Double)? {
-  let formFactor =
-    options?.formFactorOverride
-    ?? inferFormFactor(primaryModule(facts)?.manifest.usesFeatures ?? [])
+  let formFactor = formFactorOf(facts, options)
   guard case .object(let byFormFactor)? = rule.parameters?["targetSdkByFormFactor"],
     case .number(let required)? = byFormFactor[formFactor.rawValue]
   else { return nil }
@@ -148,13 +153,15 @@ private func checkAnd16k001(
     let minAlignment = numberParam(rule.parameters, "minAlignment")
   else { return [] }
 
+  let formFactor = formFactorOf(facts, options)
   var findings: [Finding] = []
   for lib in relevantNativeLibs(facts, abisFor(rule)) {
     let misaligned =
       lib.elf?.programHeaders.filter { $0.pType == ptLoad && $0.pAlign < UInt64(minAlignment) }
       ?? []
     if misaligned.isEmpty { continue }
-    let resolved = resolveTimelineSeverity(rule.timeline, asOf: asOf)
+    let resolved = resolveTimelineSeverity(
+      rule.timeline, asOf: asOf, formFactor: formFactor.rawValue)
     findings.append(
       buildFinding(
         rule,
@@ -167,6 +174,7 @@ private func checkAnd16k001(
             "path": .string(lib.path),
             "abi": .string(lib.abi),
             "alignments": .array(misaligned.map { .number(Double($0.pAlign)) }),
+            "formFactor": .string(formFactor.rawValue),
           ]
         )
       )
@@ -196,6 +204,7 @@ private func checkAnd16k002(
     let relroAlignment = numberParam(rule.parameters, "relroAlignment")
   else { return [] }
 
+  let formFactor = formFactorOf(facts, options)
   var findings: [Finding] = []
   for lib in relevantNativeLibs(facts, abisFor(rule)) {
     let programHeaders = lib.elf?.programHeaders ?? []
@@ -203,7 +212,8 @@ private func checkAnd16k002(
       if relroInOwnLoadSegment(relro, programHeaders) { continue }
       let end = relro.pVAddr + relro.pMemSz
       if end % UInt64(relroAlignment) == 0 { continue }
-      let resolved = resolveTimelineSeverity(rule.timeline, asOf: asOf)
+      let resolved = resolveTimelineSeverity(
+        rule.timeline, asOf: asOf, formFactor: formFactor.rawValue)
       findings.append(
         buildFinding(
           rule,
@@ -214,6 +224,7 @@ private func checkAnd16k002(
               "The GNU_RELRO segment must end 16 KB aligned, unless it occupies its own PT_LOAD segment.",
             evidence: [
               "path": .string(lib.path), "abi": .string(lib.abi), "end": .number(Double(end)),
+              "formFactor": .string(formFactor.rawValue),
             ]
           )
         )
@@ -233,11 +244,13 @@ private func checkAnd16k003(
     let zipAlignment = numberParam(rule.parameters, "zipAlignment")
   else { return [] }
 
+  let formFactor = formFactorOf(facts, options)
   var findings: [Finding] = []
   for lib in relevantNativeLibs(facts, abisFor(rule)) {
     guard lib.stored == true, let zipDataOffset = lib.zipDataOffset else { continue }
     if Double(zipDataOffset).truncatingRemainder(dividingBy: zipAlignment) == 0 { continue }
-    let resolved = resolveTimelineSeverity(rule.timeline, asOf: asOf)
+    let resolved = resolveTimelineSeverity(
+      rule.timeline, asOf: asOf, formFactor: formFactor.rawValue)
     findings.append(
       buildFinding(
         rule,
@@ -250,6 +263,7 @@ private func checkAnd16k003(
             "path": .string(lib.path),
             "abi": .string(lib.abi),
             "zipDataOffset": .number(Double(zipDataOffset)),
+            "formFactor": .string(formFactor.rawValue),
           ]
         )
       )

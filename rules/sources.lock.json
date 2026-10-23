@@ -34,6 +34,12 @@
       "fetchUrl": "https://developer.android.com/google/play/requirements/64-bit?hl=en",
       "sha256": "aac154b70554280a8c1138b6d9a29fca6f0c86203f6c707eec3301651805747b",
       "checkedAt": "2026-10-23"
+    },
+    {
+      "url": "https://support.google.com/googleplay/android-developer/answer/17492799",
+      "fetchUrl": "https://support.google.com/googleplay/android-developer/answer/17492799?hl=en",
+      "sha256": "c3c740659d41458820f52100749ec7b5a2153930164c5876b98c364c568ed36c",
+      "checkedAt": "2026-10-23"
     }
   ]
 }

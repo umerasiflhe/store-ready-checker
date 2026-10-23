@@ -4,8 +4,8 @@ import type { Rule } from './types.ts';
 
 describe('resolveTimelineSeverity', () => {
   const timeline = [
-    { from: '2025-11-01', severity: 'warning' as const, note: undefined },
-    { from: '2027-02-01', severity: 'error' as const, note: undefined },
+    { from: '2025-11-01', severity: 'warning' as const, note: undefined, formFactors: undefined },
+    { from: '2027-02-01', severity: 'error' as const, note: undefined, formFactors: undefined },
   ];
 
   it('returns an info "becomes required" result before the earliest entry', () => {
@@ -57,9 +57,46 @@ describe('resolveTimelineSeverity', () => {
 
   it('carries a note from the active entry', () => {
     const withNote = [
-      { from: '2026-08-31', severity: 'error' as const, note: 'extension until 2026-11-01' },
+      {
+        from: '2026-08-31',
+        severity: 'error' as const,
+        note: 'extension until 2026-11-01',
+        formFactors: undefined,
+      },
     ];
     expect(resolveTimelineSeverity(withNote, '2026-09-01').note).toBe('extension until 2026-11-01');
+  });
+
+  describe('form-factor-restricted entries', () => {
+    const withTv = [
+      ...timeline,
+      { from: '2026-08-01', severity: 'error' as const, note: undefined, formFactors: ['tv'] },
+    ];
+
+    it('apply from their date to the listed form factors', () => {
+      expect(resolveTimelineSeverity(withTv, '2026-07-31', 'tv').severity).toBe('warning');
+      expect(resolveTimelineSeverity(withTv, '2026-08-01', 'tv').severity).toBe('error');
+    });
+
+    it('are ignored for other form factors and when no form factor is given', () => {
+      expect(resolveTimelineSeverity(withTv, '2026-08-01', 'phone_tablet').severity).toBe(
+        'warning',
+      );
+      expect(resolveTimelineSeverity(withTv, '2026-08-01').severity).toBe('warning');
+    });
+
+    it('count towards "becomes required" only for the listed form factors', () => {
+      const tvOnly = [
+        { from: '2026-08-01', severity: 'error' as const, note: undefined, formFactors: ['tv'] },
+        { from: '2027-02-01', severity: 'error' as const, note: undefined, formFactors: undefined },
+      ];
+      expect(resolveTimelineSeverity(tvOnly, '2026-01-01', 'tv').becomesRequiredOn).toBe(
+        '2026-08-01',
+      );
+      expect(resolveTimelineSeverity(tvOnly, '2026-01-01', 'wear').becomesRequiredOn).toBe(
+        '2027-02-01',
+      );
+    });
   });
 });
 
@@ -71,7 +108,7 @@ describe('buildFinding', () => {
     confidence: undefined,
     appliesWhen: undefined,
     parameters: undefined,
-    timeline: [{ from: '2026-01-01', severity: 'error', note: undefined }],
+    timeline: [{ from: '2026-01-01', severity: 'error', note: undefined, formFactors: undefined }],
     sources: [{ title: 'Apple docs', url: 'https://developer.apple.com/x' }],
     fix: ['Do the thing'],
   };

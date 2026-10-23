@@ -7,6 +7,8 @@ export interface RuleTimelineEntry {
   readonly from: string;
   readonly severity: Severity;
   readonly note: string | undefined;
+  /** When set, the entry only applies to apps of these form factors (Android). */
+  readonly formFactors: readonly string[] | undefined;
 }
 
 export interface RuleSource {
@@ -98,7 +100,13 @@ function parseTimelineEntry(value: unknown): RuleTimelineEntry {
     throw new Error(`malformed timeline entry: ${JSON.stringify(value)}`);
   }
   const note = record?.note;
-  return { from, severity, note: typeof note === 'string' ? note : undefined };
+  const formFactors = record?.formFactors;
+  return {
+    from,
+    severity,
+    note: typeof note === 'string' ? note : undefined,
+    formFactors: Array.isArray(formFactors) ? formFactors.filter(isString) : undefined,
+  };
 }
 
 function parseSource(value: unknown): RuleSource {

@@ -34,7 +34,8 @@ struct RulesCommand: ParsableCommand {
       for rule in rulesFile.rules {
         print("\(rule.id) [\(rule.platform)] \(rule.title)")
         for entry in rule.timeline {
-          print("  from \(entry.from): \(entry.severity.rawValue)")
+          let only = entry.formFactors.map { " (\($0.joined(separator: ", ")) only)" } ?? ""
+          print("  from \(entry.from): \(entry.severity.rawValue)\(only)")
         }
         for source in rule.sources {
           print("  source: \(source.title) <\(source.url)>")

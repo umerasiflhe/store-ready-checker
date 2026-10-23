@@ -57,6 +57,14 @@ function relevantNativeLibs(
   return facts.nativeLibs.libraries.filter((lib) => abis.has(lib.abi));
 }
 
+/** An explicit override wins over the form factor inferred from the manifest's features. */
+function formFactorOf(facts: AndroidFacts, options?: AndroidRuleCheckOptions): FormFactor {
+  return (
+    options?.formFactorOverride ??
+    inferFormFactor(primaryModule(facts)?.manifest.usesFeatures ?? [])
+  );
+}
+
 /**
  * The form factor (an explicit override wins over the manifest-inferred one) and the rule's
  * `targetSdkByFormFactor` threshold for it, or undefined when the rule has none for it.
@@ -66,9 +74,7 @@ function targetSdkRequirement(
   rule: Rule,
   options?: AndroidRuleCheckOptions,
 ): { formFactor: string; required: number } | undefined {
-  const formFactor =
-    options?.formFactorOverride ??
-    inferFormFactor(primaryModule(facts)?.manifest.usesFeatures ?? []);
+  const formFactor = formFactorOf(facts, options);
   const byFormFactor = rule.parameters?.targetSdkByFormFactor;
   const required =
     byFormFactor && typeof byFormFactor === 'object' && !Array.isArray(byFormFactor)
@@ -142,18 +148,24 @@ function abisFor(rule: Rule): ReadonlySet<string> {
   return abis.length > 0 ? new Set(abis) : SIXTEEN_K_ABIS;
 }
 
-function checkAnd16k001(facts: AndroidFacts, rule: Rule, asOf: string): Finding[] {
+function checkAnd16k001(
+  facts: AndroidFacts,
+  rule: Rule,
+  asOf: string,
+  options?: AndroidRuleCheckOptions,
+): Finding[] {
   if (!sixteenKApplies(facts, rule)) return [];
   const minAlignment = numberParam(rule.parameters, 'minAlignment');
   if (minAlignment === undefined) return [];
 
+  const formFactor = formFactorOf(facts, options);
   const findings: Finding[] = [];
   for (const lib of relevantNativeLibs(facts, abisFor(rule))) {
     const misaligned = lib.elf?.programHeaders.filter(
       (ph) => ph.pType === PT_LOAD && ph.pAlign < BigInt(minAlignment),
     );
     if (!misaligned || misaligned.length === 0) continue;
-    const resolved = resolveTimelineSeverity(rule.timeline, asOf);
+    const resolved = resolveTimelineSeverity(rule.timeline, asOf, formFactor);
     findings.push(
       buildFinding(rule, resolved, {
         title: `PT_LOAD segment below ${String(minAlignment)}-byte alignment — ${lib.path}`,
@@ -163,6 +175,7 @@ function checkAnd16k001(facts: AndroidFacts, rule: Rule, asOf: string): Finding[
           path: lib.path,
           abi: lib.abi,
           alignments: misaligned.map((ph) => Number(ph.pAlign)),
+          formFactor,
         },
       }),
     );
@@ -181,11 +194,17 @@ function relroInOwnLoadSegment(
   );
 }
 
-function checkAnd16k002(facts: AndroidFacts, rule: Rule, asOf: string): Finding[] {
+function checkAnd16k002(
+  facts: AndroidFacts,
+  rule: Rule,
+  asOf: string,
+  options?: AndroidRuleCheckOptions,
+): Finding[] {
   if (!sixteenKApplies(facts, rule)) return [];
   const relroAlignment = numberParam(rule.parameters, 'relroAlignment');
   if (relroAlignment === undefined) return [];
 
+  const formFactor = formFactorOf(facts, options);
   const findings: Finding[] = [];
   for (const lib of relevantNativeLibs(facts, abisFor(rule))) {
     const programHeaders = lib.elf?.programHeaders ?? [];
@@ -193,13 +212,13 @@ function checkAnd16k002(facts: AndroidFacts, rule: Rule, asOf: string): Finding[
       if (relroInOwnLoadSegment(relro, programHeaders)) continue;
       const end = relro.pVAddr + relro.pMemSz;
       if (end % BigInt(relroAlignment) === 0n) continue;
-      const resolved = resolveTimelineSeverity(rule.timeline, asOf);
+      const resolved = resolveTimelineSeverity(rule.timeline, asOf, formFactor);
       findings.push(
         buildFinding(rule, resolved, {
           title: `GNU_RELRO segment ends unaligned — ${lib.path}`,
           message:
             'The GNU_RELRO segment must end 16 KB aligned, unless it occupies its own PT_LOAD segment.',
-          evidence: { path: lib.path, abi: lib.abi, end: Number(end) },
+          evidence: { path: lib.path, abi: lib.abi, end: Number(end), formFactor },
         }),
       );
     }
@@ -207,21 +226,27 @@ function checkAnd16k002(facts: AndroidFacts, rule: Rule, asOf: string): Finding[
   return findings;
 }
 
-function checkAnd16k003(facts: AndroidFacts, rule: Rule, asOf: string): Finding[] {
+function checkAnd16k003(
+  facts: AndroidFacts,
+  rule: Rule,
+  asOf: string,
+  options?: AndroidRuleCheckOptions,
+): Finding[] {
   if (facts.kind !== 'apk' || !sixteenKApplies(facts, rule)) return [];
   const zipAlignment = numberParam(rule.parameters, 'zipAlignment');
   if (zipAlignment === undefined) return [];
 
+  const formFactor = formFactorOf(facts, options);
   const findings: Finding[] = [];
   for (const lib of relevantNativeLibs(facts, abisFor(rule))) {
     if (lib.stored !== true || lib.zipDataOffset === undefined) continue;
     if (lib.zipDataOffset % zipAlignment === 0) continue;
-    const resolved = resolveTimelineSeverity(rule.timeline, asOf);
+    const resolved = resolveTimelineSeverity(rule.timeline, asOf, formFactor);
     findings.push(
       buildFinding(rule, resolved, {
         title: `Stored native library is not zip-aligned to ${String(zipAlignment)} bytes — ${lib.path}`,
         message: 'Re-run zipalign with 16 KB alignment before signing the APK.',
-        evidence: { path: lib.path, abi: lib.abi, zipDataOffset: lib.zipDataOffset },
+        evidence: { path: lib.path, abi: lib.abi, zipDataOffset: lib.zipDataOffset, formFactor },
       }),
     );
   }

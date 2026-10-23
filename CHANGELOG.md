@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- The 16 KB page-size rules (`AND-16K-001` to `003`) become errors earlier for TV apps (from
+  2026-08-01) and Wear OS apps (from 2026-09-15), per Google Play Console's technical quality
+  requirements. Timeline entries can now be limited to form factors, and 16 KB findings show the
+  form factor in their evidence.
+- `rules-watch` also watches the Play Console technical quality requirements page.
+
+### Changed
+
+- The 16 KB rules' 2025-11-01 warning start now cites Google's May 2025 announcement, since the
+  page-sizes guide no longer mentions it.
+
 ### Fixed
 
 - `AND-TSDK-002` uses Google Play's per-form-factor minimum for staying available to new users
