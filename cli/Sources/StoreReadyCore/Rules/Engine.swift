@@ -74,3 +74,19 @@ public func evaluateIosRules(
   }
   return findings
 }
+
+/// `options.formFactorOverride`, when set, takes precedence over the manifest-inferred form
+/// factor (brief §3.3: the CLI's future `--form-factor` flag and the web UI both need this).
+public func evaluateAndroidRules(
+  _ facts: AndroidFacts,
+  _ rulesFile: RulesFile,
+  _ asOf: String,
+  _ options: AndroidRuleCheckOptions? = nil
+) -> [Finding] {
+  var findings: [Finding] = []
+  for rule in rulesFile.rules where rule.platform == "android" {
+    guard let check = androidRuleChecks[rule.id] else { continue }
+    findings.append(contentsOf: check(facts, rule, asOf, options))
+  }
+  return findings
+}
