@@ -22,6 +22,7 @@ interface RuleTimelineEntry {
   from: string;
   severity: 'error' | 'warning' | 'info';
   note?: string;
+  formFactors?: string[];
 }
 interface Rule {
   id: string;
@@ -74,7 +75,9 @@ function renderRuleSection(rule: Rule): string {
   const timeline = rule.timeline
     .map(
       (entry) =>
-        `- **${entry.severity}** from ${entry.from}${entry.note ? ` — ${entry.note}` : ''}`,
+        `- **${entry.severity}** from ${entry.from}${
+          entry.formFactors ? ` (${entry.formFactors.join(', ')} only)` : ''
+        }${entry.note ? ` — ${entry.note}` : ''}`,
     )
     .join('\n');
   const sources =

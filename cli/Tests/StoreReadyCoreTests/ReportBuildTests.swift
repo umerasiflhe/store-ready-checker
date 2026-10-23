@@ -88,3 +88,31 @@ private func finding(
   )
   #expect(report.summary == ReportSummary(status: .ready, errors: 0, warnings: 0, infos: 0))
 }
+
+/// Mirrors the TS "form-factor-restricted entries" cases in `engine.test.ts`.
+@Test func timelineEntriesRestrictedToFormFactorsOnlyApplyToThem() {
+  let timeline = [
+    RuleTimelineEntry(from: "2025-11-01", severity: .warning),
+    RuleTimelineEntry(from: "2027-02-01", severity: .error),
+    RuleTimelineEntry(from: "2026-08-01", severity: .error, formFactors: ["tv"]),
+  ]
+  #expect(
+    resolveTimelineSeverity(timeline, asOf: "2026-07-31", formFactor: "tv").severity == .warning)
+  #expect(
+    resolveTimelineSeverity(timeline, asOf: "2026-08-01", formFactor: "tv").severity == .error)
+  #expect(
+    resolveTimelineSeverity(timeline, asOf: "2026-08-01", formFactor: "phone_tablet").severity
+      == .warning)
+  #expect(resolveTimelineSeverity(timeline, asOf: "2026-08-01").severity == .warning)
+
+  let tvOnly = [
+    RuleTimelineEntry(from: "2026-08-01", severity: .error, formFactors: ["tv"]),
+    RuleTimelineEntry(from: "2027-02-01", severity: .error),
+  ]
+  #expect(
+    resolveTimelineSeverity(tvOnly, asOf: "2026-01-01", formFactor: "tv").becomesRequiredOn
+      == "2026-08-01")
+  #expect(
+    resolveTimelineSeverity(tvOnly, asOf: "2026-01-01", formFactor: "wear").becomesRequiredOn
+      == "2027-02-01")
+}

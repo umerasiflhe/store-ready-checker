@@ -85,13 +85,15 @@ function sliceElement(html: string, startMarker: RegExp, tag: string): string | 
 }
 
 /**
- * The page's article text: devsite's article body on developer.android.com, `<main>` elsewhere,
- * else `<body>` — with scripts, styles and page chrome removed, so a redesign of navigation or a
- * rotated analytics snippet doesn't count as a rules change.
+ * The page's article text: devsite's article body on developer.android.com, the article content
+ * on support.google.com, `<main>` elsewhere, else `<body>` — with scripts, styles and page chrome
+ * removed, so a redesign of navigation or a rotated analytics snippet doesn't count as a rules
+ * change.
  */
 export function extractHtmlText(html: string): string {
   const region =
     sliceElement(html, /<div[^>]*class="[^"]*devsite-article-body/i, 'div') ??
+    sliceElement(html, /<div[^>]*class="article-content-container"/i, 'div') ??
     sliceElement(html, /<main\b/i, 'main') ??
     sliceElement(html, /<body\b/i, 'body') ??
     html;

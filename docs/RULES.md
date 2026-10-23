@@ -179,12 +179,16 @@ Platform: android
 
 Severity timeline:
 
-- **warning** from 2025-11-01
-- **error** from 2027-02-01
+- **warning** from 2025-11-01 — Google first announced the requirement from this date; it later moved blocking of non-compliant updates to 2027-02-01.
+- **error** from 2026-08-01 (tv only) — Play Console requires 64-bit and 16 KB page size support for TV apps as of this date.
+- **error** from 2026-09-15 (wear only) — Play Console requires 64-bit and 16 KB page size support for Wear OS apps as of this date.
+- **error** from 2027-02-01 — App updates that don't support 16 KB page sizes can't be released.
 
 Sources:
 
-- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-20)
+- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-23)
+- [Play Console Help — Play Console technical quality requirements](https://support.google.com/googleplay/android-developer/answer/17492799) (retrieved 2026-10-23)
+- [Android Developers Blog — Prepare your apps for Google Play's 16 KB page size compatibility requirement](https://android-developers.googleblog.com/2025/05/prepare-play-apps-for-devices-with-16kb-page-size.html) (retrieved 2026-10-23)
 
 Fix:
 
@@ -197,12 +201,16 @@ Platform: android
 
 Severity timeline:
 
-- **warning** from 2025-11-01
-- **error** from 2027-02-01
+- **warning** from 2025-11-01 — Google first announced the requirement from this date; it later moved blocking of non-compliant updates to 2027-02-01.
+- **error** from 2026-08-01 (tv only) — Play Console requires 64-bit and 16 KB page size support for TV apps as of this date.
+- **error** from 2026-09-15 (wear only) — Play Console requires 64-bit and 16 KB page size support for Wear OS apps as of this date.
+- **error** from 2027-02-01 — App updates that don't support 16 KB page sizes can't be released.
 
 Sources:
 
-- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-20)
+- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-23)
+- [Play Console Help — Play Console technical quality requirements](https://support.google.com/googleplay/android-developer/answer/17492799) (retrieved 2026-10-23)
+- [Android Developers Blog — Prepare your apps for Google Play's 16 KB page size compatibility requirement](https://android-developers.googleblog.com/2025/05/prepare-play-apps-for-devices-with-16kb-page-size.html) (retrieved 2026-10-23)
 
 Fix:
 
@@ -215,12 +223,16 @@ Platform: android
 
 Severity timeline:
 
-- **warning** from 2025-11-01
-- **error** from 2027-02-01
+- **warning** from 2025-11-01 — Google first announced the requirement from this date; it later moved blocking of non-compliant updates to 2027-02-01.
+- **error** from 2026-08-01 (tv only) — Play Console requires 64-bit and 16 KB page size support for TV apps as of this date.
+- **error** from 2026-09-15 (wear only) — Play Console requires 64-bit and 16 KB page size support for Wear OS apps as of this date.
+- **error** from 2027-02-01 — App updates that don't support 16 KB page sizes can't be released.
 
 Sources:
 
-- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-20)
+- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-23)
+- [Play Console Help — Play Console technical quality requirements](https://support.google.com/googleplay/android-developer/answer/17492799) (retrieved 2026-10-23)
+- [Android Developers Blog — Prepare your apps for Google Play's 16 KB page size compatibility requirement](https://android-developers.googleblog.com/2025/05/prepare-play-apps-for-devices-with-16kb-page-size.html) (retrieved 2026-10-23)
 
 Fix:
 
@@ -232,11 +244,12 @@ Platform: android
 
 Severity timeline:
 
-- **warning** from 2025-11-01
+- **warning** from 2025-11-01 — Google first announced the 16 KB requirement from this date.
 
 Sources:
 
-- [Android — Support 16 KB page sizes (bundletool section)](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-20)
+- [Android — Support 16 KB page sizes (bundletool section)](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-23)
+- [Android Developers Blog — Prepare your apps for Google Play's 16 KB page size compatibility requirement](https://android-developers.googleblog.com/2025/05/prepare-play-apps-for-devices-with-16kb-page-size.html) (retrieved 2026-10-23)
 
 Fix:
 

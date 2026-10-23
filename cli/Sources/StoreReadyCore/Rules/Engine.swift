@@ -9,11 +9,20 @@ public struct ResolvedSeverity: Sendable {
 }
 
 /// ISO `YYYY-MM-DD` dates compare correctly as plain ASCII strings, so no date parsing is
-/// needed — same as the TS side.
-public func resolveTimelineSeverity(_ timeline: [RuleTimelineEntry], asOf: String)
-  -> ResolvedSeverity
-{
-  let sorted = timeline.sorted { $0.from < $1.from }
+/// needed — same as the TS side. Entries restricted to `formFactors` only count when
+/// `formFactor` is one of them.
+public func resolveTimelineSeverity(
+  _ timeline: [RuleTimelineEntry],
+  asOf: String,
+  formFactor: String? = nil
+) -> ResolvedSeverity {
+  let sorted =
+    timeline
+    .filter { entry in
+      guard let formFactors = entry.formFactors else { return true }
+      return formFactor.map(formFactors.contains) ?? false
+    }
+    .sorted { $0.from < $1.from }
   guard let first = sorted.first else {
     fatalError("a rule timeline must have at least one entry")
   }

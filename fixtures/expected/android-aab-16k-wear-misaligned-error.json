@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.9.0", "rulesVersion": "2026.10.23" },
+    "asOf": "2026-09-15",
+    "input": { "fileName": "android-aab-16k-wear-misaligned.aab", "sizeBytes": 563, "kind": "aab" },
+    "app": { "platform": "android", "id": "com.example.app", "version": "1.0", "build": "1" },
+    "summary": { "status": "blocked", "errors": 1, "warnings": 0, "infos": 0 },
+    "findings": [
+      {
+        "ruleId": "AND-16K-001",
+        "severity": "error",
+        "confidence": "certain",
+        "title": "PT_LOAD segment below 16384-byte alignment — base/lib/arm64-v8a/libnative.so",
+        "message": "Every PT_LOAD segment must be at least 16 KB aligned to support 16 KB page sizes.",
+        "evidence": {
+          "path": "base/lib/arm64-v8a/libnative.so",
+          "abi": "arm64-v8a",
+          "alignments": [4096],
+          "formFactor": "wear"
+        },
+        "fix": [
+          "Upgrade to AGP 8.5.1+ and NDK r28+",
+          "Rebuild or update prebuilt .so files and SDKs"
+        ],
+        "sources": [
+          {
+            "title": "Android — Support 16 KB page sizes",
+            "url": "https://developer.android.com/guide/practices/page-sizes"
+          },
+          {
+            "title": "Play Console Help — Play Console technical quality requirements",
+            "url": "https://support.google.com/googleplay/android-developer/answer/17492799"
+          },
+          {
+            "title": "Android Developers Blog — Prepare your apps for Google Play's 16 KB page size compatibility requirement",
+            "url": "https://android-developers.googleblog.com/2025/05/prepare-play-apps-for-devices-with-16kb-page-size.html"
+          }
+        ]
+      }
+    ]
+  }
+}

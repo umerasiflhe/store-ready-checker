@@ -110,6 +110,18 @@ private let fixtureCases: [FixtureCase] = [
   FixtureCase(
     "android-aab-16k-load-misaligned.aab", asOf: "2027-02-01",
     goldenName: "android-aab-16k-load-misaligned-error"),
+  FixtureCase(
+    "android-aab-16k-tv-misaligned.aab", asOf: "2026-07-31",
+    goldenName: "android-aab-16k-tv-misaligned-warning"),
+  FixtureCase(
+    "android-aab-16k-tv-misaligned.aab", asOf: "2026-08-01",
+    goldenName: "android-aab-16k-tv-misaligned-error"),
+  FixtureCase(
+    "android-aab-16k-wear-misaligned.aab", asOf: "2026-09-14",
+    goldenName: "android-aab-16k-wear-misaligned-warning"),
+  FixtureCase(
+    "android-aab-16k-wear-misaligned.aab", asOf: "2026-09-15",
+    goldenName: "android-aab-16k-wear-misaligned-error"),
   FixtureCase("android-aab-16k-relro-misaligned.aab"),
   FixtureCase("android-aab-16k-relro-exempt.aab"),
   FixtureCase("android-aab-16k-bundleconfig-missing-flag.aab"),

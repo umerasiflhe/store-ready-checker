@@ -18,12 +18,22 @@ function sortedTimeline(timeline: readonly RuleTimelineEntry[]): readonly RuleTi
   return [...timeline].sort((a, b) => (a.from < b.from ? -1 : a.from > b.from ? 1 : 0));
 }
 
-/** ISO `YYYY-MM-DD` dates compare correctly as plain strings, so no Date parsing is needed. */
+/**
+ * ISO `YYYY-MM-DD` dates compare correctly as plain strings, so no Date parsing is needed.
+ * Entries restricted to `formFactors` only count when `formFactor` is one of them.
+ */
 export function resolveTimelineSeverity(
   timeline: readonly RuleTimelineEntry[],
   asOf: string,
+  formFactor?: string,
 ): ResolvedSeverity {
-  const sorted = sortedTimeline(timeline);
+  const sorted = sortedTimeline(
+    timeline.filter(
+      (entry) =>
+        entry.formFactors === undefined ||
+        (formFactor !== undefined && entry.formFactors.includes(formFactor)),
+    ),
+  );
   const first = sorted.at(0);
   if (!first) {
     throw new Error('a rule timeline must have at least one entry');

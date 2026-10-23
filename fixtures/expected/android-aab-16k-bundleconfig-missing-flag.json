@@ -23,6 +23,10 @@
           {
             "title": "Android — Support 16 KB page sizes (bundletool section)",
             "url": "https://developer.android.com/guide/practices/page-sizes"
+          },
+          {
+            "title": "Android Developers Blog — Prepare your apps for Google Play's 16 KB page size compatibility requirement",
+            "url": "https://android-developers.googleblog.com/2025/05/prepare-play-apps-for-devices-with-16kb-page-size.html"
           }
         ]
       }

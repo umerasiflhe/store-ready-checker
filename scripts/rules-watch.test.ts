@@ -17,6 +17,13 @@ describe('extractHtmlText', () => {
     expect(extractHtmlText(html)).toBe('Target API level Apps must target API 35.');
   });
 
+  it('uses the Google Help article content, ignoring the rest of the body', () => {
+    const html = `<body><script nonce="abc123">gtag();</script><header>Play Console Help</header>
+      <div class="article-content-container"><div class="cc"><p>TV: Required as of 1 Aug, 2026.</p>
+      </div></div><div class="article-survey-container">Was this helpful?</div></body>`;
+    expect(extractHtmlText(html)).toBe('TV: Required as of 1 Aug, 2026.');
+  });
+
   it('falls back to <main>, dropping scripts, styles, comments and nav', () => {
     const html = `<body><header>Apple Developer</header><main id="m">
       <script>window.analytics = 1;</script><style>p{}</style><!-- build 123 -->

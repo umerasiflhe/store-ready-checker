@@ -154,6 +154,21 @@ async function generate16kLoadMisaligned(): Promise<void> {
   ]);
 }
 
+/** Same misaligned library in a TV and a Wear OS app, for their earlier 16 KB dates. */
+async function generate16kFormFactorMisaligned(): Promise<void> {
+  const misaligned = aabNativeLib('base', 'arm64-v8a', [
+    { pVAddr: 0, pMemSz: 0x1000, pAlign: 4096 },
+  ]);
+  await writeFixture('android-aab-16k-tv-misaligned.aab', [
+    aabManifestEntry('base', { ...CLEAN_MANIFEST, usesFeatures: ['android.software.leanback'] }),
+    misaligned,
+  ]);
+  await writeFixture('android-aab-16k-wear-misaligned.aab', [
+    aabManifestEntry('base', { ...CLEAN_MANIFEST, usesFeatures: ['android.hardware.type.watch'] }),
+    misaligned,
+  ]);
+}
+
 async function generate16kRelroMisaligned(): Promise<void> {
   await writeFixture('android-aab-16k-relro-misaligned.aab', [
     aabManifestEntry('base'),
@@ -260,6 +275,7 @@ async function main(): Promise<void> {
   await generateTsdkPreview();
   await generateMissingUsesSdk();
   await generate16kLoadMisaligned();
+  await generate16kFormFactorMisaligned();
   await generate16kRelroMisaligned();
   await generate16kRelroExempt();
   await generate16kBundleConfigMissingFlag();

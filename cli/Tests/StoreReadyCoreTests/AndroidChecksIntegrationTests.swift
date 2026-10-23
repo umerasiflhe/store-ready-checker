@@ -30,6 +30,30 @@ private let androidCases: [Case] = [
     kind: .aab
   ),
   Case(
+    fixture: "android-aab-16k-tv-misaligned",
+    golden: "android-aab-16k-tv-misaligned-warning",
+    asOf: "2026-07-31",
+    kind: .aab
+  ),
+  Case(
+    fixture: "android-aab-16k-tv-misaligned",
+    golden: "android-aab-16k-tv-misaligned-error",
+    asOf: "2026-08-01",
+    kind: .aab
+  ),
+  Case(
+    fixture: "android-aab-16k-wear-misaligned",
+    golden: "android-aab-16k-wear-misaligned-warning",
+    asOf: "2026-09-14",
+    kind: .aab
+  ),
+  Case(
+    fixture: "android-aab-16k-wear-misaligned",
+    golden: "android-aab-16k-wear-misaligned-error",
+    asOf: "2026-09-15",
+    kind: .aab
+  ),
+  Case(
     fixture: "android-aab-16k-relro-exempt",
     golden: "android-aab-16k-relro-exempt",
     asOf: "2026-10-20",
