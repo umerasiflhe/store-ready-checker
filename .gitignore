@@ -61,3 +61,8 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 *.swp
+
+# --- Real-build workflow outputs (fixtures/real-builds; built in CI, never committed) ---
+fixtures/real-builds/android/build/
+fixtures/real-builds/android/.gradle/
+fixtures/real-builds/android/.cxx/

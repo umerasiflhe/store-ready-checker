@@ -1,0 +1,170 @@
+name: Real builds
+
+# Brief §7.6: build real Xcode 26 and Gradle/NDK artifacts from fixtures/real-builds/, then check
+# that both the TS core and the Swift CLI report what each variant should trigger. Artifacts are
+# uploaded for 7 days and never committed.
+on:
+  schedule:
+    - cron: '41 5 * * 2'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - fixtures/real-builds/**
+      - scripts/check-real-build.ts
+      - scripts/lib/core-report.ts
+      - .github/workflows/real-builds.yml
+
+concurrency:
+  group: real-builds-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    name: ios (Xcode 26)
+    runs-on: macos-26
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install XcodeGen
+        run: |
+          set -euo pipefail
+          curl -sSLO https://github.com/yonaskolb/XcodeGen/releases/download/2.46.0/xcodegen.zip
+          echo "4d9e34b62172d645eed6457cac13fc222569974098ef4ee9c3368bedf0196806  xcodegen.zip" | shasum -a 256 -c -
+          unzip -q xcodegen.zip -d "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/xcodegen/bin" >> "$GITHUB_PATH"
+
+      - name: Build ready .ipa
+        run: |
+          mkdir -p real-builds
+          fixtures/real-builds/ios/build-ipa.sh real-builds/ios-ready.ipa
+
+      - name: Build deployment-target-12.0 .ipa
+        run: fixtures/real-builds/ios/build-ipa.sh real-builds/ios-old-minos.ipa IPHONEOS_DEPLOYMENT_TARGET=12.0
+
+      - name: Record the real DTXcode
+        run: |
+          set -euo pipefail
+          {
+            echo "### Xcode"
+            echo
+            echo "- \`xcodebuild -version\`: $(xcodebuild -version | tr '\n' ' ')"
+            for ipa in real-builds/*.ipa; do
+              unzip -p "$ipa" 'Payload/RealBuild.app/Info.plist' > "$RUNNER_TEMP/Info.plist"
+              echo "- \`$(basename "$ipa")\`: DTXcode=$(plutil -extract DTXcode raw "$RUNNER_TEMP/Info.plist"), DTSDKName=$(plutil -extract DTSDKName raw "$RUNNER_TEMP/Info.plist"), MinimumOSVersion=$(plutil -extract MinimumOSVersion raw "$RUNNER_TEMP/Info.plist")"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload .ipa artifacts
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: real-builds-ios
+          path: real-builds/
+          retention-days: 7
+
+  android:
+    name: android (AGP + NDK r28)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Java
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          gradle-version: '9.7.1'
+
+      - name: Install Android SDK packages
+        run: |
+          set -euo pipefail
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install \
+            'platforms;android-36' 'ndk;28.2.13676358' 'cmake;3.31.6' > /dev/null
+
+      - name: Build .aab variants
+        working-directory: fixtures/real-builds/android
+        run: |
+          set -euo pipefail
+          out="$GITHUB_WORKSPACE/real-builds"
+          mkdir -p "$out"
+          build() {
+            local name="$1"; shift
+            gradle --no-daemon clean bundleRelease "$@"
+            cp build/outputs/bundle/release/RealBuild-release.aab "$out/$name.aab"
+          }
+          build android-ready
+          build android-16k-4096 -PmaxPageSize=4096
+          build android-tsdk-34 -PtargetSdk=34
+          ls -l "$out"
+
+      - name: Upload .aab artifacts
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: real-builds-android
+          path: real-builds/
+          retention-days: 7
+
+  check:
+    name: check (TS core + Swift CLI)
+    needs: [ios, android]
+    runs-on: macos-26
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download artifacts
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: real-builds-*
+          path: real-builds
+          merge-multiple: true
+
+      - name: Build the Swift CLI
+        run: swift build --package-path cli -c release --product storeready
+
+      - name: Check every artifact
+        run: |
+          set -uo pipefail
+          {
+            echo "### Results"
+            echo
+            echo "| | Artifact | Status | Findings |"
+            echo "| --- | --- | --- | --- |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          cli=cli/.build/release/storeready
+          failed=0
+          check() { npx tsx scripts/check-real-build.ts "$@" --swift "$cli" || failed=1; }
+          check real-builds/ios-ready.ipa --expect-status ready
+          check real-builds/ios-old-minos.ipa --expect-status blocked --expect-rule IOS-MINOS-001
+          check real-builds/android-ready.aab --expect-status ready
+          check real-builds/android-16k-4096.aab --expect-rule AND-16K-001
+          check real-builds/android-tsdk-34.aab --expect-status blocked --expect-rule AND-TSDK-001
+          exit "$failed"
