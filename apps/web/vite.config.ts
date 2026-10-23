@@ -26,17 +26,22 @@ export default defineConfig({
         background_color: '#0b0d10',
         theme_color: '#0b0d10',
         icons: [
+          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
           {
-            src: 'icon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any maskable',
+            src: 'icon-maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
       },
       workbox: {
         // Same-origin build output only — nothing third-party is ever precached (hard constraint 1).
-        globPatterns: ['**/*.{js,css,html,svg,webmanifest}'],
+        // og-image.png is only for link previews, so it's left out of the precache.
+        globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
+        globIgnores: ['og-image.png'],
       },
     }),
   ],

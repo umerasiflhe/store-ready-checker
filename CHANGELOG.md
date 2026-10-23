@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- PNG app icons (192, 512, a maskable 512, and a 180 px `apple-touch-icon` for iOS home screens)
+  and an Open Graph image for link previews, rendered by `npm run gen:images`. The icons are
+  precached for offline use.
 - The 16 KB page-size rules (`AND-16K-001` to `003`) become errors earlier for TV apps (from
   2026-08-01) and Wear OS apps (from 2026-09-15), per Google Play Console's technical quality
   requirements. Timeline entries can now be limited to form factors, and 16 KB findings show the

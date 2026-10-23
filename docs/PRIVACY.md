@@ -16,10 +16,13 @@ No accounts, no server, no uploads, no analytics, no telemetry, no cookies. The 
 requests the web page ever makes are same-origin `GET`s for its own static assets (HTML, JS, CSS,
 the worker script, icons) — nothing else, not even while analysing a file.
 
+The page's Open Graph tags name an image (`og-image.png`) on this same deployment. Browsers never
+fetch it; only link-preview crawlers do, when someone shares the URL.
+
 ## How this is enforced
 
 1. **Content-Security-Policy** `<meta>` tag with `connect-src 'none'`, `script-src 'self'`,
-   `worker-src 'self' blob:'`, `object-src 'none'`, `form-action 'none'` — see `apps/web/index.html`.
+   `worker-src 'self' blob:`, `object-src 'none'`, `form-action 'none'` — see `apps/web/index.html`.
 2. **ESLint rules** (`eslint.config.js`) ban `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`,
    `navigator.sendBeacon`, and `importScripts` in `apps/web/src/**` and `packages/core/src/**`.
 3. **Automated Playwright tests** (`e2e/privacy.spec.ts`) record every network request for a whole
