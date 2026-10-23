@@ -14,14 +14,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   requirements. Timeline entries can now be limited to form factors, and 16 KB findings show the
   form factor in their evidence.
 - `rules-watch` also watches the Play Console technical quality requirements page.
+- Required-reason detection covers `UIDocument.fileModificationDate` (FileTimestamp) and treats
+  `getattrlist`, `fgetattrlist` and `getattrlistat` as DiskSpace too, as Apple lists them under
+  both categories.
+- `rules-watch` also watches Apple's `NSPrivacyAccessedAPIType` reference, which now holds the
+  category and API tables, and its DocC extraction keeps inline API links.
 
 ### Changed
 
 - The 16 KB rules' 2025-11-01 warning start now cites Google's May 2025 announcement, since the
   page-sizes guide no longer mentions it.
+- The required-reason API and listed-SDK seed data are verified against Apple's current pages
+  (2026-10-23), and `IOS-PRIV-001` to `003` also cite the `NSPrivacyAccessedAPIType` reference.
 
 ### Fixed
 
+- `IOS-PRIV-002` no longer reports an API that Apple lists under two categories when the privacy
+  manifest declares either one (e.g. `getattrlist` with only DiskSpace declared).
 - `AND-TSDK-002` uses Google Play's per-form-factor minimum for staying available to new users
   (35 for phones and tablets, 34 for Wear OS, Android TV and Android XR, 32 for Android Automotive
   OS) instead of 35 for every app, so Wear, TV, XR and Automotive apps no longer get a false

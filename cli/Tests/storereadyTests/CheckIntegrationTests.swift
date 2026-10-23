@@ -88,6 +88,7 @@ private let fixtureCases: [FixtureCase] = [
   FixtureCase("ios-old-minos.ipa"),
   FixtureCase("ios-priv-001-missing-manifest.ipa"),
   FixtureCase("ios-priv-002-missing-category.ipa"),
+  FixtureCase("ios-priv-002-shared-api-declared.ipa"),
   FixtureCase("ios-priv-003-bad-reason-code.ipa"),
   FixtureCase("ios-priv-003-malformed-manifest.ipa"),
   FixtureCase("ios-priv-004-listed-sdk-no-manifest.ipa"),

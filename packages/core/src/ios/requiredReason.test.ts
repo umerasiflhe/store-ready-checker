@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { detectRequiredReasonUsage, parseRequiredReasonSeed } from './requiredReason.ts';
+import requiredReasonJson from '../../../../rules/apple-required-reason-apis.json' with { type: 'json' };
+import {
+  detectRequiredReasonUsage,
+  parseRequiredReasonSeed,
+  undeclaredUsage,
+} from './requiredReason.ts';
 
 const SEED_JSON = {
   categories: [
@@ -66,5 +71,36 @@ describe('detectRequiredReasonUsage', () => {
     expect(
       detectRequiredReasonUsage({ symbols: ['_unrelated'], selectors: [] }, seed.value),
     ).toEqual([]);
+  });
+});
+
+describe('undeclaredUsage (real seed)', () => {
+  const parsed = parseRequiredReasonSeed(requiredReasonJson);
+  if (!parsed.ok) throw new Error('rules/apple-required-reason-apis.json is invalid');
+  const realSeed = parsed.value;
+  const FILE_TIMESTAMP = 'NSPrivacyAccessedAPICategoryFileTimestamp';
+  const DISK_SPACE = 'NSPrivacyAccessedAPICategoryDiskSpace';
+
+  function undeclaredFor(symbols: string[], declared: string[], selectors: string[] = []) {
+    const usage = detectRequiredReasonUsage({ symbols, selectors }, realSeed);
+    return undeclaredUsage(usage, new Set(declared), realSeed).map((u) => u.category);
+  }
+
+  it('detects getattrlist as both FileTimestamp and DiskSpace', () => {
+    expect(undeclaredFor(['_getattrlist'], [])).toEqual([FILE_TIMESTAMP, DISK_SPACE]);
+  });
+
+  it('accepts either category for an API Apple lists under both', () => {
+    expect(undeclaredFor(['_getattrlist'], [DISK_SPACE])).toEqual([]);
+    expect(undeclaredFor(['_fgetattrlist'], [FILE_TIMESTAMP])).toEqual([]);
+  });
+
+  it('still flags a category whose other APIs are not covered', () => {
+    // statfs is DiskSpace only, so declaring FileTimestamp covers getattrlist but not statfs.
+    expect(undeclaredFor(['_getattrlist', '_statfs'], [FILE_TIMESTAMP])).toEqual([DISK_SPACE]);
+  });
+
+  it('detects UIDocument.fileModificationDate as FileTimestamp', () => {
+    expect(undeclaredFor([], [], ['fileModificationDate'])).toEqual([FILE_TIMESTAMP]);
   });
 });

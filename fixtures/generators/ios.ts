@@ -104,6 +104,31 @@ async function generatePriv002MissingCategory(): Promise<void> {
   ]);
 }
 
+/**
+ * Imports getattrlist, which Apple lists under both FileTimestamp and DiskSpace, and declares
+ * only DiskSpace: that covers it, so IOS-PRIV-002 must not fire.
+ */
+async function generatePriv002SharedApiDeclared(): Promise<void> {
+  await writeIpa('ios-priv-002-shared-api-declared.ipa', [
+    { name: 'Payload/MyApp.app/Info.plist', data: infoPlistXml() },
+    {
+      name: 'Payload/MyApp.app/MyApp',
+      data: buildThinMachO({ symtabSymbols: [{ name: '_getattrlist', undefinedExternal: true }] }),
+    },
+    {
+      name: 'Payload/MyApp.app/PrivacyInfo.xcprivacy',
+      data: encodeXmlPlist({
+        NSPrivacyAccessedAPITypes: [
+          {
+            NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryDiskSpace',
+            NSPrivacyAccessedAPITypeReasons: ['E174.1'],
+          },
+        ],
+      }),
+    },
+  ]);
+}
+
 async function generatePriv003BadReasonCode(): Promise<void> {
   await writeIpa('ios-priv-003-bad-reason-code.ipa', [
     { name: 'Payload/MyApp.app/Info.plist', data: infoPlistXml() },
@@ -229,6 +254,7 @@ async function main(): Promise<void> {
   await generateOldMinimumOSVersion();
   await generatePriv001MissingManifest();
   await generatePriv002MissingCategory();
+  await generatePriv002SharedApiDeclared();
   await generatePriv003BadReasonCode();
   await generatePriv003MalformedManifest();
   await generatePriv004ListedSdkNoManifest();

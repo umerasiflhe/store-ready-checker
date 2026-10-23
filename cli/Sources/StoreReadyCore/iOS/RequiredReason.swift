@@ -96,3 +96,22 @@ public func detectRequiredReasonUsage(
   }
   return results
 }
+
+/// The detected usages that `declared` doesn't cover. Apple lists some APIs under more than one
+/// category (`getattrlist` is both FileTimestamp and DiskSpace), and declaring any one of those
+/// categories covers them, so a usage only counts while one of its matched APIs isn't listed
+/// under a declared category.
+public func undeclaredUsage(
+  _ usages: [DetectedRequiredReasonUsage],
+  declared: Set<String>,
+  seed: RequiredReasonSeed
+) -> [DetectedRequiredReasonUsage] {
+  let declaredEvidence = seed.categories.filter { declared.contains($0.type) }.map(\.evidence)
+  let coveredSymbols = Set(declaredEvidence.flatMap(\.symbols))
+  let coveredSelectors = Set(declaredEvidence.flatMap(\.selectors))
+  return usages.filter { usage in
+    !declared.contains(usage.category)
+      && (usage.matchedSymbols.contains { !coveredSymbols.contains($0) }
+        || usage.matchedSelectors.contains { !coveredSelectors.contains($0) })
+  }
+}

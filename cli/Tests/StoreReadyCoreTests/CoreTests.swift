@@ -53,7 +53,8 @@ private func asJSONValue(_ report: Report) -> JSONValue {
   let fixtures = [
     "ios-passing-app", "ios-binary-plist", "ios-encrypted-binary", "ios-fat-binary",
     "ios-old-minos", "ios-old-xcode", "ios-appex-old-sdk", "ios-priv-001-missing-manifest",
-    "ios-priv-002-missing-category", "ios-priv-003-bad-reason-code",
+    "ios-priv-002-missing-category", "ios-priv-002-shared-api-declared",
+    "ios-priv-003-bad-reason-code",
     "ios-priv-003-malformed-manifest", "ios-priv-004-listed-sdk-no-manifest",
     "ios-priv-004-listed-sdk-with-manifest",
   ]

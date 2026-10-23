@@ -52,6 +52,12 @@ describe('extractDocCText', () => {
         kind: 'content',
         content: [
           { type: 'paragraph', inlineContent: [{ type: 'text', text: 'Use reason 35F9.1.' }] },
+          {
+            type: 'paragraph',
+            inlineContent: [
+              { type: 'reference', identifier: 'doc://com.apple.documentation/documentation/x' },
+            ],
+          },
           { type: 'codeListing', code: ['<key>NSPrivacyAccessedAPIType</key>'] },
         ],
       },
@@ -59,9 +65,9 @@ describe('extractDocCText', () => {
     references: { sidebar: { title: 'Unrelated page that changes often' } },
   };
 
-  it('keeps the abstract and content and skips metadata and references', () => {
+  it('keeps the abstract, content and inline links, and skips metadata and references', () => {
     expect(extractDocCText(JSON.stringify(doc))).toBe(
-      'Ensure your use of covered API is consistent. Use reason 35F9.1. <key>NSPrivacyAccessedAPIType</key>',
+      'Ensure your use of covered API is consistent. Use reason 35F9.1. doc://com.apple.documentation/documentation/x <key>NSPrivacyAccessedAPIType</key>',
     );
   });
 
