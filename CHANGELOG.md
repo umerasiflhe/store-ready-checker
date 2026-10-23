@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- CI: the `e2e` job caches Playwright's ~120 MB of apt packages, so a slow Ubuntu mirror no longer
+  times it out.
+- CI: commitlint exempts Dependabot's commits by their sign-off trailer, so a squash-merged
+  Dependabot PR no longer fails `lint` on `main`.
+
 ## [0.9.0] - 2026-10-23
 
 First public pre-release: the web checker is live on GitHub Pages and the `storeready` CLI ships
