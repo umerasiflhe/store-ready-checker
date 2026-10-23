@@ -15,6 +15,7 @@ permissions:
 jobs:
   lint:
     name: lint
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -70,6 +71,7 @@ jobs:
 
   web:
     name: web
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -109,6 +111,7 @@ jobs:
 
   e2e:
     name: e2e
+    timeout-minutes: 40
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -125,8 +128,26 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Read Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 15
         run: npx playwright install --with-deps
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 10
+        run: npx playwright install-deps
 
       - name: End-to-end tests
         run: npm run test:e2e
@@ -141,6 +162,7 @@ jobs:
 
   swift:
     name: swift
+    timeout-minutes: 30
     runs-on: macos-26
     permissions:
       contents: read
@@ -157,8 +179,30 @@ jobs:
       - name: Swift tests
         run: swift test --package-path cli
 
+  swift-linux:
+    # Best effort (brief §8): proves the CLI builds and tests on Linux with the official toolchain,
+    # but isn't a required check.
+    name: swift-linux
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    container:
+      image: swift:6.3.2-noble@sha256:c4336909a71b2e69b884f4078cdf98c0cd081911632cb349ef72abc4cbed69fc
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build
+        run: swift build --package-path cli
+
+      - name: Swift tests
+        run: swift test --package-path cli
+
   conformance:
     name: conformance
+    timeout-minutes: 30
     runs-on: macos-26
     permissions:
       contents: read
