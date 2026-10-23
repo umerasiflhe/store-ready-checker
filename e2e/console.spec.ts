@@ -31,7 +31,7 @@ test('a full analysis session produces no console errors or CSP violations', asy
       console.error(`CSP violation: ${event.violatedDirective} blocked ${event.blockedURI}`);
     });
   });
-  await page.goto('/');
+  await page.goto('./');
 
   await page.getByRole('button', { name: /Android — blocked/ }).click();
   await waitForResult(page);

@@ -4,7 +4,7 @@ import { waitForResult } from './support.ts';
 test('changing "Check as of" flips the 16K finding across the 2027-02-01 boundary', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: /Android — blocked/ }).click();
   await waitForResult(page);
 

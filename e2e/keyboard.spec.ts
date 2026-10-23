@@ -12,7 +12,7 @@ test('the whole flow is reachable and operable by keyboard alone', async ({
   // eslint-disable-next-line playwright/no-skipped-test
   test.skip(browserName === 'webkit', "WebKit's default Tab order only includes form fields");
 
-  await page.goto('/');
+  await page.goto('./');
 
   // Tab order: trust-panel link, then the drop zone.
   await page.keyboard.press('Tab');
@@ -26,7 +26,7 @@ test('the whole flow is reachable and operable by keyboard alone', async ({
 
   // Reload for a clean focus state, then tab past the trust-panel link and the drop zone to
   // reach the first sample button and activate it with the keyboard.
-  await page.goto('/');
+  await page.goto('./');
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');

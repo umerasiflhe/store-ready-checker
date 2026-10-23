@@ -10,7 +10,7 @@ test('a full analysis session makes only same-origin static-asset GETs', async (
     requests.push({ url: request.url(), method: request.method() });
   });
 
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: /Android — blocked/ }).click();
   await waitForResult(page);
 
@@ -28,7 +28,7 @@ test('a full analysis session makes only same-origin static-asset GETs', async (
 });
 
 test('the app works offline after the first load', async ({ page, context }) => {
-  await page.goto('/');
+  await page.goto('./');
   // Let the service worker finish installing and activating before going offline.
   await page.evaluate(async () => {
     const registration = await navigator.serviceWorker.ready;

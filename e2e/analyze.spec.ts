@@ -19,7 +19,7 @@ const androidBlockedFinding = firstFinding('android-aab-16k-load-misaligned-warn
 
 test.describe('analyzing a build', () => {
   test('the iOS ready sample shows a ready verdict with no findings', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('./');
     await page.getByRole('button', { name: /iOS — ready/ }).click();
     await waitForResult(page);
 
@@ -28,7 +28,7 @@ test.describe('analyzing a build', () => {
   });
 
   test('the Android ready sample shows the AND-INFO-001 info finding', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('./');
     await page.getByRole('button', { name: /Android — ready/ }).click();
     await waitForResult(page);
 
@@ -42,7 +42,7 @@ test.describe('analyzing a build', () => {
   test('the Android blocked sample shows the AND-16K-001 finding with evidence and a fix', async ({
     page,
   }) => {
-    await page.goto('/');
+    await page.goto('./');
     await page.getByRole('button', { name: /Android — blocked/ }).click();
     await waitForResult(page);
 
@@ -59,14 +59,14 @@ test.describe('analyzing a build', () => {
   test('dropping a real fixture file from disk via the file input works the same way', async ({
     page,
   }) => {
-    await page.goto('/');
+    await page.goto('./');
     await page.locator('input[type=file]').setInputFiles(fixtureFilePath('ios-passing-app.ipa'));
     await waitForResult(page);
     await expect(page.locator('.verdict-banner')).toContainText('Ready to upload');
   });
 
   test('"Check another file" returns to the idle drop zone', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('./');
     await page.getByRole('button', { name: /iOS — ready/ }).click();
     await waitForResult(page);
     await page.getByRole('button', { name: 'Check another file' }).click();

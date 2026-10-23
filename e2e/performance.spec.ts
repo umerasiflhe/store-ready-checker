@@ -11,7 +11,7 @@ test('a 500 MB synthetic IPA is analysed in under 10 seconds', async ({ page }, 
 
   const largeIpaPath = await ensureLargeIpa();
 
-  await page.goto('/');
+  await page.goto('./');
   const start = Date.now();
   await page.locator('input[type=file]').setInputFiles(largeIpaPath);
   await waitForResult(page);

@@ -19,7 +19,7 @@ addFormats(ajv);
 const validateReport = ajv.compile(schema);
 
 test('download JSON produces a report that validates against the schema', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: /Android — ready/ }).click();
   await waitForResult(page);
 
@@ -48,7 +48,7 @@ test('copy as Markdown puts a readable report on the clipboard', async ({
   test.skip(browserName !== 'chromium', 'clipboard-read can only be granted on Chromium');
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: /Android — blocked/ }).click();
   await waitForResult(page);
 
