@@ -41,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- CI: the post-deploy smoke test shares the e2e job's cached Playwright setup (now the
+  `setup-playwright` composite action), so a slow apt mirror no longer fails a deploy.
 - `AND-64BIT-001` uses Google Play's dates per form factor: required since 2019-08-01 for phone,
   tablet, Automotive and XR apps (not 2021-08-01, when Play stopped serving 32-bit-only apps on
   64-bit devices), from 2026-08-01 for TV and from 2026-09-15 for Wear OS. Earlier "as of" dates

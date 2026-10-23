@@ -127,59 +127,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Make apt time out and retry stalled downloads
-        # The runner's Azure apt mirror sometimes stalls mid-download; apt's default has no
-        # connection timeout, so `playwright install-deps` would hang until the job timeout.
-        # Keep downloaded .debs so the next step's cache can save them.
-        run: |
-          printf 'Acquire::http::Timeout "30";\nAcquire::https::Timeout "30";\nAcquire::Retries "5";\nBinary::apt::APT::Keep-Downloaded-Packages "true";\n' \
-            | sudo tee /etc/apt/apt.conf.d/99-ci-network > /dev/null
-
-      - name: Read Playwright version and runner image
-        id: playwright
-        run: |
-          echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-          echo "image=${ImageOS}-${ImageVersion}" >> "$GITHUB_OUTPUT"
-
-      - name: Cache Playwright's apt packages
-        # Playwright's system dependencies are ~120 MB of .debs. The mirror usually serves them in
-        # seconds but sometimes at ~70 KB/s, which no step timeout survives, so reuse them.
-        id: apt-cache
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/apt-archives
-          key: playwright-apt-${{ steps.playwright.outputs.image }}-${{ steps.playwright.outputs.version }}
-          restore-keys: playwright-apt-${{ steps.playwright.outputs.image }}-
-
-      - name: Restore cached apt packages
-        # Also runs on a restore-keys (partial) match, which leaves cache-hit false.
-        run: |
-          if [ -d ~/apt-archives ]; then
-            sudo find ~/apt-archives -maxdepth 1 -name '*.deb' -exec cp {} /var/cache/apt/archives/ \;
-          fi
-
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 15
-        run: npx playwright install --with-deps
-
-      - name: Install Playwright system dependencies
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        timeout-minutes: 10
-        run: npx playwright install-deps
-
-      - name: Collect apt packages for the cache
-        if: steps.apt-cache.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p ~/apt-archives
-          find /var/cache/apt/archives -maxdepth 1 -name '*.deb' -exec cp {} ~/apt-archives/ \;
+      - name: Set up Playwright
+        uses: ./.github/actions/setup-playwright
 
       - name: End-to-end tests
         run: npm run test:e2e
