@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- `AND-TSDK-002` uses Google Play's per-form-factor minimum for staying available to new users
+  (35 for phones and tablets, 34 for Wear OS, Android TV and Android XR, 32 for Android Automotive
+  OS) instead of 35 for every app, so Wear, TV, XR and Automotive apps no longer get a false
+  warning. Rules version `2026.10.23`.
 - CI: the `e2e` job caches Playwright's ~120 MB of apt packages, so a slow Ubuntu mirror no longer
   times it out.
 - CI: commitlint exempts Dependabot's commits by their sign-off trailer, so a squash-merged

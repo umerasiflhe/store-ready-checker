@@ -1,7 +1,7 @@
 {
   "ok": true,
   "value": {
-    "tool": { "name": "store-ready", "version": "0.9.0", "rulesVersion": "2026.10.20" },
+    "tool": { "name": "store-ready", "version": "0.9.0", "rulesVersion": "2026.10.23" },
     "asOf": "2026-10-20",
     "input": {
       "fileName": "ios-priv-004-listed-sdk-with-manifest.ipa",

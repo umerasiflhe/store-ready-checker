@@ -39,7 +39,7 @@ Check an iOS or Android build against the current App Store Connect and Google P
 | `IOS-PRIV-004`  | ios      | Listed third-party SDK bundled without its own privacy manifest                             | 2024-05-01    |
 | `IOS-INFO-001`  | ios      | Executable is encrypted — API detection is limited                                          | 1970-01-01    |
 | `AND-TSDK-001`  | android  | targetSdkVersion meets the Play requirement for new apps and updates                        | 2026-08-31    |
-| `AND-TSDK-002`  | android  | targetSdkVersion should be at least 35 to stay visible to new users                         | 2026-08-31    |
+| `AND-TSDK-002`  | android  | targetSdkVersion should meet the per-form-factor minimum to stay available to new users     | 2026-08-31    |
 | `AND-16K-001`   | android  | 64-bit native libraries must be 16 KB page aligned                                          | 2025-11-01    |
 | `AND-16K-002`   | android  | GNU_RELRO segment must end 16 KB aligned (unless in its own LOAD segment)                   | 2025-11-01    |
 | `AND-16K-003`   | android  | Stored (uncompressed) native libraries must be 16 KB zip-aligned (APK only)                 | 2025-11-01    |

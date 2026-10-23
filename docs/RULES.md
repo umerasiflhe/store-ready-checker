@@ -2,7 +2,7 @@
 
 # Rules
 
-Rules version: `2026.10.20`. Every rule is evaluated "as of" a chosen date against its severity timeline below.
+Rules version: `2026.10.23`. Every rule is evaluated "as of" a chosen date against its severity timeline below.
 
 | ID              | Platform | Check                                                                                       | In force from |
 | --------------- | -------- | ------------------------------------------------------------------------------------------- | ------------- |
@@ -14,7 +14,7 @@ Rules version: `2026.10.20`. Every rule is evaluated "as of" a chosen date again
 | `IOS-PRIV-004`  | ios      | Listed third-party SDK bundled without its own privacy manifest                             | 2024-05-01    |
 | `IOS-INFO-001`  | ios      | Executable is encrypted — API detection is limited                                          | 1970-01-01    |
 | `AND-TSDK-001`  | android  | targetSdkVersion meets the Play requirement for new apps and updates                        | 2026-08-31    |
-| `AND-TSDK-002`  | android  | targetSdkVersion should be at least 35 to stay visible to new users                         | 2026-08-31    |
+| `AND-TSDK-002`  | android  | targetSdkVersion should meet the per-form-factor minimum to stay available to new users     | 2026-08-31    |
 | `AND-16K-001`   | android  | 64-bit native libraries must be 16 KB page aligned                                          | 2025-11-01    |
 | `AND-16K-002`   | android  | GNU_RELRO segment must end 16 KB aligned (unless in its own LOAD segment)                   | 2025-11-01    |
 | `AND-16K-003`   | android  | Stored (uncompressed) native libraries must be 16 KB zip-aligned (APK only)                 | 2025-11-01    |
@@ -157,7 +157,7 @@ Fix:
 - Raise targetSdkVersion to meet the Play requirement for your app's form factor
 - Test thoroughly against the new target SDK before re-uploading
 
-## `AND-TSDK-002` — targetSdkVersion should be at least 35 to stay visible to new users
+## `AND-TSDK-002` — targetSdkVersion should meet the per-form-factor minimum to stay available to new users
 
 Platform: android
 
@@ -171,7 +171,7 @@ Sources:
 
 Fix:
 
-- Raise targetSdkVersion to at least 35
+- Raise targetSdkVersion to at least the minimum for your app's form factor: 35 for phones and tablets, 34 for Wear OS, Android TV and Android XR, 32 for Android Automotive OS
 
 ## `AND-16K-001` — 64-bit native libraries must be 16 KB page aligned
 

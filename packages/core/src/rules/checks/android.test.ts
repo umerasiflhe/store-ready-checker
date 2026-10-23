@@ -139,6 +139,49 @@ describe('AND-TSDK-002', () => {
   it('passes at the minimum targetSdkVersion', () => {
     expect(findingsFor('AND-TSDK-002', facts())).toHaveLength(0);
   });
+
+  function withTarget(value: number, usesFeatures: string[] = []): AndroidFacts {
+    return facts({
+      modules: [
+        moduleFacts({
+          manifest: manifest({ targetSdkVersion: { kind: 'released', value }, usesFeatures }),
+        }),
+      ],
+    });
+  }
+
+  it.each([
+    ['phone_tablet', [], 35],
+    ['wear', ['android.hardware.type.watch'], 34],
+    ['tv', ['android.software.leanback'], 34],
+    ['automotive', ['android.hardware.type.automotive'], 32],
+  ])('uses the %s minimum', (formFactor, usesFeatures, required) => {
+    expect(findingsFor('AND-TSDK-002', withTarget(required, usesFeatures))).toHaveLength(0);
+    const found = findingsFor('AND-TSDK-002', withTarget(required - 1, usesFeatures));
+    expect(found).toHaveLength(1);
+    expect(found[0]?.evidence).toMatchObject({ formFactor, required });
+  });
+
+  it('prefers an explicit formFactorOverride over the manifest-inferred form factor', () => {
+    // Inferred phone/tablet needs 35; overridden to automotive, 33 is enough.
+    const data = withTarget(33);
+    expect(findingsFor('AND-TSDK-002', data)).toHaveLength(1);
+    const overridden = evaluateAndroidRules(data, rulesFile, '2026-10-20', {
+      formFactorOverride: 'automotive',
+    }).filter((f) => f.ruleId === 'AND-TSDK-002');
+    expect(overridden).toHaveLength(0);
+  });
+
+  it('never flags a preview codename targetSdkVersion', () => {
+    const data = facts({
+      modules: [
+        moduleFacts({
+          manifest: manifest({ targetSdkVersion: { kind: 'preview', codename: 'Baklava' } }),
+        }),
+      ],
+    });
+    expect(findingsFor('AND-TSDK-002', data)).toHaveLength(0);
+  });
 });
 
 describe('AND-16K-001', () => {
