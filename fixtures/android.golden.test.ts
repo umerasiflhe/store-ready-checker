@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { analyzeAab, analyzeApk } from '../packages/core/src/index.ts';
 import { parseRulesFile } from '../packages/core/src/rules/types.ts';
 import { BlobByteSource } from '../packages/core/src/zip/byteSource.ts';
+import { TOOL_VERSION } from './helpers/toolVersion.ts';
 import { loadRulesData, readExpected, readFixtureBlob } from './helpers/loadFixture.ts';
 
 const rulesFileResult = parseRulesFile(loadRulesData());
@@ -63,7 +64,7 @@ describe('Android fixture golden tests', () => {
       const result = await analyze(new BlobByteSource(blob), {
         fileName,
         asOf,
-        toolVersion: '0.1.0',
+        toolVersion: TOOL_VERSION,
         rules: rulesFile,
       });
       expect(result).toEqual(readExpected(goldenName));

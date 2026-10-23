@@ -4,5 +4,5 @@ import Testing
 
 @Test func toolNameAndVersion() {
   #expect(ToolInfo.name == "store-ready")
-  #expect(ToolInfo.version == "0.1.0")
+  #expect(ToolInfo.version == "0.9.0")
 }

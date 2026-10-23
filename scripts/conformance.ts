@@ -12,6 +12,7 @@ import { existsSync } from 'node:fs';
 import { isDeepStrictEqual } from 'node:util';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { TOOL_VERSION } from '../fixtures/helpers/toolVersion.ts';
 import { analyzeAab, analyzeApk, analyzeIpa } from '../packages/core/src/index.ts';
 import { parseListedSdksSeed, type ListedSdksSeed } from '../packages/core/src/ios/listedSdks.ts';
 import {
@@ -126,19 +127,23 @@ async function analyzeWithCore(
   requiredReasonApis: RequiredReasonSeed,
 ): Promise<Result<Report>> {
   const blob = readFixtureBlob(fileName);
-  const toolVersion = '0.1.0';
   if (fileName.endsWith('.ipa')) {
     return analyzeIpa(new BlobByteSource(blob), {
       fileName,
       asOf,
-      toolVersion,
+      toolVersion: TOOL_VERSION,
       rules: rulesFile,
       requiredReasonApis,
       listedSdks,
     });
   }
   const analyze = fileName.endsWith('.aab') ? analyzeAab : analyzeApk;
-  return analyze(new BlobByteSource(blob), { fileName, asOf, toolVersion, rules: rulesFile });
+  return analyze(new BlobByteSource(blob), {
+    fileName,
+    asOf,
+    toolVersion: TOOL_VERSION,
+    rules: rulesFile,
+  });
 }
 
 async function main(): Promise<void> {

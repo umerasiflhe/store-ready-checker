@@ -63,7 +63,7 @@ private func asJSONValue(_ report: Report) -> JSONValue {
       options: AnalyzeIpaOptions(
         fileName: "\(name).ipa",
         asOf: "2026-10-20",
-        toolVersion: "0.1.0",
+        toolVersion: ToolInfo.version,
         rules: rulesFile,
         requiredReasonApis: seeds.requiredReasonApis,
         listedSdks: seeds.listedSdks
@@ -91,7 +91,7 @@ private func asJSONValue(_ report: Report) -> JSONValue {
       options: AnalyzeAndroidOptions(
         fileName: "\(name).aab",
         asOf: "2026-10-20",
-        toolVersion: "0.1.0",
+        toolVersion: ToolInfo.version,
         rules: rulesFile
       )
     )
@@ -111,7 +111,7 @@ private func asJSONValue(_ report: Report) -> JSONValue {
       options: AnalyzeAndroidOptions(
         fileName: "\(name).apk",
         asOf: "2026-10-20",
-        toolVersion: "0.1.0",
+        toolVersion: ToolInfo.version,
         rules: rulesFile
       )
     )
@@ -130,7 +130,7 @@ private func asJSONValue(_ report: Report) -> JSONValue {
     options: AnalyzeAndroidOptions(
       fileName: "android-aab-16k-load-misaligned.aab",
       asOf: "2026-10-20",
-      toolVersion: "0.1.0",
+      toolVersion: ToolInfo.version,
       rules: rulesFile
     )
   )
@@ -147,7 +147,7 @@ private func asJSONValue(_ report: Report) -> JSONValue {
     options: AnalyzeAndroidOptions(
       fileName: "android-aab-16k-load-misaligned.aab",
       asOf: "2027-02-01",
-      toolVersion: "0.1.0",
+      toolVersion: ToolInfo.version,
       rules: rulesFile
     )
   )
@@ -164,7 +164,7 @@ private func asJSONValue(_ report: Report) -> JSONValue {
   let options = AnalyzeIpaOptions(
     fileName: "x.ipa",
     asOf: "2026-10-20",
-    toolVersion: "0.1.0",
+    toolVersion: ToolInfo.version,
     rules: rulesFile,
     requiredReasonApis: seeds.requiredReasonApis,
     listedSdks: seeds.listedSdks

@@ -7,6 +7,7 @@ import { parseListedSdksSeed } from '../packages/core/src/ios/listedSdks.ts';
 import { parseRequiredReasonSeed } from '../packages/core/src/ios/requiredReason.ts';
 import { parseRulesFile } from '../packages/core/src/rules/types.ts';
 import { BlobByteSource } from '../packages/core/src/zip/byteSource.ts';
+import { TOOL_VERSION } from './helpers/toolVersion.ts';
 import {
   loadListedSdks,
   loadRequiredReasonApis,
@@ -53,7 +54,7 @@ describe('iOS fixture golden tests', () => {
       const result = await analyzeIpa(new BlobByteSource(blob), {
         fileName: `${name}.ipa`,
         asOf: '2026-10-20',
-        toolVersion: '0.1.0',
+        toolVersion: TOOL_VERSION,
         rules: rulesFile,
         requiredReasonApis,
         listedSdks,

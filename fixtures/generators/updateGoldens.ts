@@ -6,6 +6,7 @@ import { parseListedSdksSeed } from '../../packages/core/src/ios/listedSdks.ts';
 import { parseRequiredReasonSeed } from '../../packages/core/src/ios/requiredReason.ts';
 import { parseRulesFile } from '../../packages/core/src/rules/types.ts';
 import { BlobByteSource } from '../../packages/core/src/zip/byteSource.ts';
+import { TOOL_VERSION } from '../helpers/toolVersion.ts';
 import {
   loadListedSdks,
   loadRequiredReasonApis,
@@ -96,7 +97,7 @@ async function main(): Promise<void> {
     const result = await analyzeIpa(new BlobByteSource(blob), {
       fileName,
       asOf: '2026-10-20',
-      toolVersion: '0.1.0',
+      toolVersion: TOOL_VERSION,
       rules: rulesFile,
       requiredReasonApis,
       listedSdks,
@@ -112,7 +113,7 @@ async function main(): Promise<void> {
     const result = await analyze(new BlobByteSource(blob), {
       fileName,
       asOf,
-      toolVersion: '0.1.0',
+      toolVersion: TOOL_VERSION,
       rules: rulesFile,
     });
     await writeExpected(goldenName, result);

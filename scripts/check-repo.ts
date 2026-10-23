@@ -177,6 +177,27 @@ function checkProtoGenFreshness(): void {
   }
 }
 
+function checkToolVersionsAgree(): void {
+  const versions: Record<string, string | undefined> = {};
+  for (const pkg of ['apps/web/package.json', 'packages/core/package.json']) {
+    const text = readRepoFile(pkg);
+    versions[pkg] =
+      text === undefined ? undefined : (JSON.parse(text) as { version?: string }).version;
+  }
+  const swift = readRepoFile('cli/Sources/StoreReadyCore/ToolInfo.swift');
+  versions['cli/Sources/StoreReadyCore/ToolInfo.swift'] = swift?.match(
+    /static let version = "([^"]+)"/,
+  )?.[1];
+
+  const distinct = new Set(Object.values(versions));
+  if (distinct.size !== 1 || distinct.has(undefined)) {
+    const listed = Object.entries(versions)
+      .map(([file, version]) => `${file}=${version ?? '(missing)'}`)
+      .join(', ');
+    problems.push(`tool version differs between TS and Swift — ${listed}`);
+  }
+}
+
 async function checkRulesBlockFreshness(): Promise<void> {
   if (!existsSync(join(repoRoot, 'rules/rules.json'))) return;
 
@@ -204,6 +225,7 @@ checkFileSizes();
 checkNoIgnoredTrackedFiles();
 checkReadmeLinks();
 checkProtoGenFreshness();
+checkToolVersionsAgree();
 await checkRulesBlockFreshness();
 
 if (problems.length > 0) {
