@@ -2,25 +2,28 @@
 
 Check an iOS or Android build against the current App Store Connect and Google Play upload rules before you upload it. It runs in your browser, and your file is never uploaded.
 
+**Try it: <https://umerasiflhe.github.io/store-ready-checker/>**
+
 [![CI](https://github.com/umerasiflhe/store-ready-checker/actions/workflows/ci.yml/badge.svg)](https://github.com/umerasiflhe/store-ready-checker/actions/workflows/ci.yml)
+[![Deploy](https://github.com/umerasiflhe/store-ready-checker/actions/workflows/deploy.yml/badge.svg)](https://github.com/umerasiflhe/store-ready-checker/actions/workflows/deploy.yml)
+[![Release](https://img.shields.io/github/v/release/umerasiflhe/store-ready-checker)](https://github.com/umerasiflhe/store-ready-checker/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> **Status: in development.** The web checker will be live at <https://umerasiflhe.github.io/store-ready-checker/> after Milestone 5. Progress is in [CHANGELOG.md](CHANGELOG.md).
+> **Status: pre-release (v0.9.0).** The web checker is live and the CLI ships as prebuilt binaries;
+> v1.0.0 follows a full re-audit of every rule against its official source. Progress is in
+> [CHANGELOG.md](CHANGELOG.md).
 >
-> **Works today (Milestone 4 — web app + Swift CLI):** drop (or try a sample) `.ipa`, `.aab`, or
-> `.apk` at `npm run dev`/`npm run build` + `npm run preview` and get a full report, entirely
-> client-side — a Web Worker parses the zip's central directory once, evaluates every
-> `IOS-*`/`AND-*` rule below, and lets you change the "Check as of" date or an Android form-factor
-> override and re-evaluate instantly without re-reading the file. Results are filterable by
-> severity, with evidence/fix-steps/sources per finding, copy-as-Markdown, and download-JSON.
-> Installable offline PWA; CSP blocks any outgoing request. The same checks also ship as a Swift
-> CLI (`storeready check <file> --format text|json|markdown`, `storeready rules`) with
-> byte-for-byte JSON parity, verified by `scripts/conformance.ts` on every fixture. Verified by 80
-> Playwright tests across Chromium/Firefox/WebKit/a mobile viewport (drop/sample flows,
-> keyboard-only use, zero accessibility violations, zero network requests beyond same-origin
-> static assets, a 500 MB file analysed in under 10 s), 82 Swift tests (including CLI integration
-> tests against the built binary), and the 32-fixture TS/Swift conformance suite. Not deployed to
-> Pages yet; no prebuilt CLI binary release yet (both Milestone 5).
+> **Works today:**
+>
+> - The web checker on GitHub Pages: drop an `.ipa`, `.aab` or `.apk` (or try a sample), get a
+>   verdict with evidence, fix steps and sources for every finding, change the "Check as of" date
+>   to see upcoming deadlines, and export Markdown or JSON. It works offline once loaded, and a
+>   CSP plus an automated test after every deploy prove nothing is sent anywhere.
+> - The `storeready` CLI for macOS (universal) and Linux, producing JSON byte-identical to the web
+>   app's on every fixture.
+> - Checked against real builds every week: an Xcode 26 `.ipa` and Gradle/NDK r28 `.aab`s built
+>   from scratch in CI.
+> - A weekly watch on Apple's and Google's requirement pages that opens an issue when one changes.
 
 ## What it checks
 
@@ -51,6 +54,36 @@ Sources and dates for every rule: [docs/RULES.md](docs/RULES.md).
 ## Privacy
 
 Your build is read by a Web Worker inside your browser and is never sent anywhere. A Content-Security-Policy blocks outgoing data, and an automated test proves it. Details: [docs/PRIVACY.md](docs/PRIVACY.md).
+
+## CLI
+
+Download the binary for your platform from [GitHub Releases](https://github.com/umerasiflhe/store-ready-checker/releases)
+and check it against `SHA256SUMS`:
+
+```bash
+v=0.9.0
+curl -fsSLO "https://github.com/umerasiflhe/store-ready-checker/releases/download/v$v/storeready-$v-macos-universal.tar.gz"
+curl -fsSLO "https://github.com/umerasiflhe/store-ready-checker/releases/download/v$v/SHA256SUMS"
+shasum -a 256 -c SHA256SUMS --ignore-missing
+tar -xzf "storeready-$v-macos-universal.tar.gz"
+./storeready-$v-macos-universal/storeready check MyApp.ipa
+```
+
+Keep `storeready` next to its `StoreReady_StoreReadyCore.bundle` (`.resources` on Linux), which
+holds the rule data. The binary isn't notarized: if you downloaded it with a browser, macOS
+quarantines it, so clear that once with `xattr -dr com.apple.quarantine storeready-$v-macos-universal`.
+On Linux, use `storeready-$v-linux-x86_64.tar.gz` instead.
+
+```bash
+storeready check <file> [--format text|json|markdown] [--as-of YYYY-MM-DD]
+                        [--form-factor phone|wear|tv|automotive|xr]
+                        [--fail-on error|warning|never] [--no-color]
+storeready rules [--format text|json]
+storeready --version
+```
+
+Exit codes: `0` nothing at or above `--fail-on` (default `error`); `1` findings at or above it; `2`
+the file couldn't be analysed or the arguments are invalid.
 
 ## Develop
 

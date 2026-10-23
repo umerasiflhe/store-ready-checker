@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-23
+
+First public pre-release: the web checker is live on GitHub Pages and the `storeready` CLI ships
+as prebuilt macOS (universal) and Linux binaries. Everything from Milestones 0–5 is below.
+
 ### Added
 
 - Milestone 0 (bootstrap): repo scaffolding (npm workspaces, strict TypeScript, ESLint, Prettier, markdownlint, commitlint, lefthook git hooks with a self-test).
@@ -110,3 +115,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   runs both it and the TS core on every fixture, and diffs their JSON output (`tool.version`
   normalized out). New CI jobs `swift` and `conformance` (both `macos-26`) run this on every
   push and pull request.
+- Milestone 5 (CI/CD + hosting): the web app deploys to
+  <https://umerasiflhe.github.io/store-ready-checker/> from `deploy.yml` after CI is green on
+  `main`, then a smoke job checks the CSP `<meta>` in the served HTML and runs the analyze and
+  privacy Playwright specs against the live URL.
+- `release.yml`: on a `v*.*.*` tag, checks the tag against every version source, builds a macOS
+  universal (arm64 + x86_64) and a Linux x86_64 (static Swift stdlib) `storeready`, packages each
+  with its resource bundle, smoke-tests the extracted tarball with the build tree deleted, and
+  publishes a GitHub Release with `SHA256SUMS` and notes from this file
+  (`scripts/changelog-section.ts`).
+- `real-builds.yml` (brief §7.6): builds a real unsigned `.ipa` with Xcode 26 (XcodeGen + `xcodebuild
+archive`) and real `.aab`s with AGP 9.4 + NDK r28 from `fixtures/real-builds/`, then
+  `scripts/check-real-build.ts` checks every variant with both the TS core and the Swift CLI: ready
+  builds report `ready`, deployment target 12.0 reports `IOS-MINOS-001`, a 4 KB `max-page-size`
+  library reports `AND-16K-001`, `targetSdk 34` reports `AND-TSDK-001`, and both implementations
+  agree on every one. The real build's `DTXcode` (`2660`) is recorded in the job summary.
+- `rules-watch.yml` + `scripts/rules-watch.ts`: weekly, hashes the article text of every official
+  page in `rules/sources.lock.json` (Apple's DocC JSON for the JS-rendered required-reason page;
+  devsite pages pinned to English, since they localise per request) and opens or comments on a
+  `rules-change` issue per changed page. Hashes are now recorded for all six sources.
+- `codeql.yml` (JavaScript/TypeScript), `.github/dependabot.yml` (npm, Swift, Actions),
+  `CODEOWNERS`, a PR template with the definition-of-done checklist, and bug-report (JSON report,
+  never the binary) and rule-change issue templates.
+- `swift-linux` CI job (official `swift:6.3.2-noble` image, best effort).
+- The tool version has one source per language (`apps/web/package.json`, `ToolInfo.swift`), and the
+  repo check fails if they disagree.
+
+### Fixed
+
+- CI could hang for hours: no job had a timeout, and `playwright install-deps` stalled forever on
+  an unresponsive apt mirror. Every job now has a timeout, apt connections time out and retry, and
+  Playwright browsers are cached.
+- The Swift CLI didn't compile on Linux (CoreFoundation's `CFGetTypeID` for plist booleans, and the
+  non-`Sendable` Glibc `stdout` global).
+- The Playwright specs navigated to `/`, which resolves to the origin root, so they couldn't run
+  against GitHub Pages' `/store-ready-checker/` path.
+
+[Unreleased]: https://github.com/umerasiflhe/store-ready-checker/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/umerasiflhe/store-ready-checker/releases/tag/v0.9.0

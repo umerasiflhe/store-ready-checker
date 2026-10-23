@@ -35,6 +35,12 @@ pull request.
 Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `test:`, `ci:`, …), enforced by
 `commit-msg`. One logical change per commit.
 
+## Pull requests
+
+`main` is protected: changes land through a pull request with the `lint`, `web`, `e2e`, `swift` and
+`conformance` checks green, squash-merged so history stays linear. The PR template's checklist
+mirrors the definition of done in `CLAUDE.md`.
+
 ## Before you open a pull request
 
 Run `./scripts/verify.sh` (or `./scripts/verify.sh --full` to include end-to-end tests) and make
