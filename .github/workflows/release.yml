@@ -1,0 +1,185 @@
+name: Release
+
+# On a v*.*.* tag: build the macOS universal and Linux x86_64 CLI binaries, smoke-test each from
+# its packaged location, and publish a GitHub Release with SHA256SUMS and notes from CHANGELOG.md.
+on:
+  push:
+    tags: ['v*.*.*']
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: verify tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Tag matches the tool version everywhere
+        id: version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+          web=$(node -p "require('./apps/web/package.json').version")
+          swift=$(sed -n 's/.*static let version = "\(.*\)".*/\1/p' cli/Sources/StoreReadyCore/ToolInfo.swift)
+          if [ "$version" != "$web" ] || [ "$version" != "$swift" ]; then
+            echo "::error::tag $TAG doesn't match apps/web ($web) and ToolInfo.swift ($swift)"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Release notes exist in CHANGELOG.md
+        run: npx tsx scripts/changelog-section.ts "${{ steps.version.outputs.version }}" > release-notes.md
+
+      - name: Upload release notes
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-notes
+          path: release-notes.md
+          retention-days: 7
+
+  macos:
+    name: macOS universal
+    needs: verify
+    runs-on: macos-26
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      VERSION: ${{ needs.verify.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build universal binary
+        run: swift build --package-path cli -c release --arch arm64 --arch x86_64 --product storeready
+
+      - name: Package
+        run: |
+          set -euo pipefail
+          products=cli/.build/apple/Products/Release
+          lipo "$products/storeready" -verify_arch arm64 x86_64
+          dir="storeready-$VERSION-macos-universal"
+          mkdir -p "dist/$dir"
+          cp -R "$products/storeready" "$products/StoreReady_StoreReadyCore.bundle" \
+            LICENSE THIRD_PARTY_NOTICES.md "dist/$dir/"
+          tar -C dist -czf "dist/$dir.tar.gz" "$dir"
+
+      - name: Smoke-test the packaged binary away from the build tree
+        run: |
+          set -euo pipefail
+          cp fixtures/files/ios-passing-app.ipa "$RUNNER_TEMP/"
+          rm -rf cli/.build
+          mkdir "$RUNNER_TEMP/extract"
+          tar -C "$RUNNER_TEMP/extract" -xzf "dist/storeready-$VERSION-macos-universal.tar.gz"
+          bin="$RUNNER_TEMP/extract/storeready-$VERSION-macos-universal/storeready"
+          test "$("$bin" --version)" = "$VERSION"
+          "$bin" check "$RUNNER_TEMP/ios-passing-app.ipa" --as-of 2026-10-20
+
+      - name: Upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cli-macos
+          path: dist/*.tar.gz
+          retention-days: 7
+
+  linux:
+    name: Linux x86_64
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: swift:6.3.2-noble@sha256:c4336909a71b2e69b884f4078cdf98c0cd081911632cb349ef72abc4cbed69fc
+    permissions:
+      contents: read
+    env:
+      VERSION: ${{ needs.verify.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build static-stdlib binary
+        run: swift build --package-path cli -c release --static-swift-stdlib --product storeready
+
+      - name: Package
+        run: |
+          set -euo pipefail
+          products="$(swift build --package-path cli -c release --show-bin-path)"
+          dir="storeready-$VERSION-linux-x86_64"
+          mkdir -p "dist/$dir"
+          cp -R "$products/storeready" "$products/StoreReady_StoreReadyCore.resources" \
+            LICENSE THIRD_PARTY_NOTICES.md "dist/$dir/"
+          tar -C dist -czf "dist/$dir.tar.gz" "$dir"
+
+      - name: Smoke-test the packaged binary away from the build tree
+        run: |
+          set -euo pipefail
+          cp fixtures/files/ios-passing-app.ipa /tmp/
+          rm -rf cli/.build
+          mkdir /tmp/extract
+          tar -C /tmp/extract -xzf "dist/storeready-$VERSION-linux-x86_64.tar.gz"
+          bin="/tmp/extract/storeready-$VERSION-linux-x86_64/storeready"
+          test "$("$bin" --version)" = "$VERSION"
+          "$bin" check /tmp/ios-passing-app.ipa --as-of 2026-10-20
+
+      - name: Upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cli-linux
+          path: dist/*.tar.gz
+          retention-days: 7
+
+  publish:
+    name: publish
+    needs: [verify, macos, linux]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.verify.outputs.version }}
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Checksums
+        working-directory: dist
+        run: |
+          sha256sum -- *.tar.gz > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" dist/*.tar.gz dist/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Store Ready $VERSION" \
+            --notes-file dist/release-notes.md \
+            --verify-tag
