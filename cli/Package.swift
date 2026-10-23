@@ -9,10 +9,19 @@ let package = Package(
     .executable(name: "storeready", targets: ["storeready"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.5.0")
+    .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.5.0"),
+    .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.9"),
+    .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.9.0"),
   ],
   targets: [
-    .target(name: "StoreReadyCore", resources: [.copy("Resources")]),
+    .target(
+      name: "StoreReadyCore",
+      dependencies: [
+        "ZIPFoundation",
+        .product(name: "SwiftProtobuf", package: "swift-protobuf"),
+      ],
+      resources: [.copy("Resources")]
+    ),
     .executableTarget(
       name: "storeready",
       dependencies: [

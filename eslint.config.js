@@ -18,7 +18,7 @@ export default defineConfig([
     'apps/web/src/samples.data.ts',
     'playwright-report/**',
     'test-results/**',
-    '.build/**',
+    '**/.build/**',
   ]),
   {
     files: ['**/*.{ts,mts,cts,js,mjs,cjs}'],
