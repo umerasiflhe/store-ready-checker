@@ -49,6 +49,9 @@ jobs:
         run: npm run typecheck
 
       - name: Commitlint
+        # Dependabot's generated bodies embed release-note lines longer than our limit; human
+        # commits are also linted locally by the commit-msg hook.
+        if: github.actor != 'dependabot[bot]'
         uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6.2.1
         with:
           configFile: ./commitlint.config.mjs
@@ -127,6 +130,13 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Make apt time out and retry stalled downloads
+        # The runner's Azure apt mirror sometimes stalls mid-download; apt's default has no
+        # connection timeout, so `playwright install-deps` would hang until the job timeout.
+        run: |
+          printf 'Acquire::http::Timeout "30";\nAcquire::https::Timeout "30";\nAcquire::Retries "5";\n' \
+            | sudo tee /etc/apt/apt.conf.d/99-ci-network > /dev/null
 
       - name: Read Playwright version
         id: playwright
