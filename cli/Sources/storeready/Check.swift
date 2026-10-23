@@ -120,7 +120,7 @@ struct Check: ParsableCommand {
 
     switch format {
     case .text:
-      let color = !noColor && isatty(fileno(stdout)) != 0
+      let color = !noColor && isatty(STDOUT_FILENO) != 0
       print(renderText(report, color: color))
     case .json:
       let encoder = JSONEncoder()
