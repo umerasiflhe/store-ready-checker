@@ -81,6 +81,18 @@ const FIXTURES: readonly FixtureCase[] = [
   fixture('android-aab-16k-relro-exempt.aab'),
   fixture('android-aab-16k-bundleconfig-missing-flag.aab'),
   fixture('android-aab-64bit-missing.aab'),
+  fixture('android-aab-64bit-tv-missing.aab', '2026-07-31', 'android-aab-64bit-tv-missing-before'),
+  fixture('android-aab-64bit-tv-missing.aab', '2026-08-01', 'android-aab-64bit-tv-missing-error'),
+  fixture(
+    'android-aab-64bit-wear-missing.aab',
+    '2026-09-14',
+    'android-aab-64bit-wear-missing-before',
+  ),
+  fixture(
+    'android-aab-64bit-wear-missing.aab',
+    '2026-09-15',
+    'android-aab-64bit-wear-missing-error',
+  ),
   fixture('android-aab-malformed-manifest.aab'),
   fixture('android-apk-passing.apk'),
   fixture('android-apk-zip-misaligned.apk'),

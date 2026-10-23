@@ -46,7 +46,7 @@ Check an iOS or Android build against the current App Store Connect and Google P
 | `AND-16K-002`   | android  | GNU_RELRO segment must end 16 KB aligned (unless in its own LOAD segment)                   | 2025-11-01    |
 | `AND-16K-003`   | android  | Stored (uncompressed) native libraries must be 16 KB zip-aligned (APK only)                 | 2025-11-01    |
 | `AND-16K-004`   | android  | BundleConfig.pb should request 16 KB alignment when native libs are uncompressed (AAB only) | 2025-11-01    |
-| `AND-64BIT-001` | android  | 32-bit native code must ship alongside a matching 64-bit ABI                                | 2021-08-01    |
+| `AND-64BIT-001` | android  | 32-bit native code must ship alongside a matching 64-bit ABI                                | 2019-08-01    |
 | `AND-INFO-001`  | android  | No 64-bit-relevant native code detected                                                     | 1970-01-01    |
 
 <!-- rules:end -->

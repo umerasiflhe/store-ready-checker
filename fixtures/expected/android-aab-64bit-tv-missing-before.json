@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "value": {
+    "tool": { "name": "store-ready", "version": "0.9.0", "rulesVersion": "2026.10.23" },
+    "asOf": "2026-07-31",
+    "input": { "fileName": "android-aab-64bit-tv-missing.aab", "sizeBytes": 566, "kind": "aab" },
+    "app": { "platform": "android", "id": "com.example.app", "version": "1.0", "build": "1" },
+    "summary": { "status": "ready", "errors": 0, "warnings": 0, "infos": 2 },
+    "findings": [
+      {
+        "ruleId": "AND-64BIT-001",
+        "severity": "info",
+        "confidence": "certain",
+        "title": "armeabi-v7a native code ships without a matching arm64-v8a library",
+        "message": "Google Play requires a matching 64-bit native library alongside any 32-bit one. Becomes required on 2026-08-01.",
+        "evidence": { "abi": "armeabi-v7a", "missingAbi": "arm64-v8a", "formFactor": "tv" },
+        "fix": ["Build and ship a matching 64-bit (arm64-v8a / x86_64) native library"],
+        "sources": [
+          {
+            "title": "Google Play — 64-bit requirement",
+            "url": "https://developer.android.com/google/play/requirements/64-bit"
+          },
+          {
+            "title": "Android Developers Blog — Get your apps ready for the 64-bit requirement",
+            "url": "https://android-developers.googleblog.com/2019/01/get-your-apps-ready-for-64-bit.html"
+          },
+          {
+            "title": "Android Developers Blog — 64-bit app compatibility for Google TV and Android TV",
+            "url": "https://android-developers.googleblog.com/2025/08/64-bit-app-compatibility-for-google-tv-android-tv.html"
+          },
+          {
+            "title": "Android Developers Blog — Get your Wear OS apps ready for the 64-bit requirement",
+            "url": "https://android-developers.googleblog.com/2026/04/get-your-wear-os-apps-ready-for-64-bit-requirement.html"
+          }
+        ]
+      },
+      {
+        "ruleId": "AND-INFO-001",
+        "severity": "info",
+        "confidence": "certain",
+        "title": "No 64-bit-relevant native code detected",
+        "message": "The 16 KB page-size checks do not apply: no arm64-v8a or x86_64 native library was found.",
+        "evidence": { "abis": ["armeabi-v7a"] },
+        "fix": [
+          "No action needed — this app has no native code, only 32-bit native code, or declares android:pageSizeCompat."
+        ],
+        "sources": [
+          {
+            "title": "Android — Support 16 KB page sizes",
+            "url": "https://developer.android.com/guide/practices/page-sizes"
+          }
+        ]
+      }
+    ]
+  }
+}

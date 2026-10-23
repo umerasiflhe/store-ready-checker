@@ -13,12 +13,28 @@
         "confidence": "certain",
         "title": "armeabi-v7a native code ships without a matching arm64-v8a library",
         "message": "Google Play requires a matching 64-bit native library alongside any 32-bit one.",
-        "evidence": { "abi": "armeabi-v7a", "missingAbi": "arm64-v8a" },
+        "evidence": {
+          "abi": "armeabi-v7a",
+          "missingAbi": "arm64-v8a",
+          "formFactor": "phone_tablet"
+        },
         "fix": ["Build and ship a matching 64-bit (arm64-v8a / x86_64) native library"],
         "sources": [
           {
             "title": "Google Play — 64-bit requirement",
             "url": "https://developer.android.com/google/play/requirements/64-bit"
+          },
+          {
+            "title": "Android Developers Blog — Get your apps ready for the 64-bit requirement",
+            "url": "https://android-developers.googleblog.com/2019/01/get-your-apps-ready-for-64-bit.html"
+          },
+          {
+            "title": "Android Developers Blog — 64-bit app compatibility for Google TV and Android TV",
+            "url": "https://android-developers.googleblog.com/2025/08/64-bit-app-compatibility-for-google-tv-android-tv.html"
+          },
+          {
+            "title": "Android Developers Blog — Get your Wear OS apps ready for the 64-bit requirement",
+            "url": "https://android-developers.googleblog.com/2026/04/get-your-wear-os-apps-ready-for-64-bit-requirement.html"
           }
         ]
       },

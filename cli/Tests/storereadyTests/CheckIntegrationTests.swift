@@ -127,6 +127,18 @@ private let fixtureCases: [FixtureCase] = [
   FixtureCase("android-aab-16k-relro-exempt.aab"),
   FixtureCase("android-aab-16k-bundleconfig-missing-flag.aab"),
   FixtureCase("android-aab-64bit-missing.aab"),
+  FixtureCase(
+    "android-aab-64bit-tv-missing.aab", asOf: "2026-07-31",
+    goldenName: "android-aab-64bit-tv-missing-before"),
+  FixtureCase(
+    "android-aab-64bit-tv-missing.aab", asOf: "2026-08-01",
+    goldenName: "android-aab-64bit-tv-missing-error"),
+  FixtureCase(
+    "android-aab-64bit-wear-missing.aab", asOf: "2026-09-14",
+    goldenName: "android-aab-64bit-wear-missing-before"),
+  FixtureCase(
+    "android-aab-64bit-wear-missing.aab", asOf: "2026-09-15",
+    goldenName: "android-aab-64bit-wear-missing-error"),
   FixtureCase("android-aab-malformed-manifest.aab"),
   FixtureCase("android-apk-passing.apk"),
   FixtureCase("android-apk-zip-misaligned.apk"),

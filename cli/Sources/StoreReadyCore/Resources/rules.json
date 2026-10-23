@@ -10,7 +10,7 @@
         {
           "title": "Apple — Upcoming requirements",
           "url": "https://developer.apple.com/news/upcoming-requirements/",
-          "retrieved": "2026-10-20"
+          "retrieved": "2026-10-23"
         }
       ],
       "fix": ["Install Xcode 26 or later", "Archive again and re-export the IPA"]
@@ -25,7 +25,7 @@
         {
           "title": "Apple — Upcoming requirements",
           "url": "https://developer.apple.com/news/upcoming-requirements/",
-          "retrieved": "2026-10-20"
+          "retrieved": "2026-10-23"
         }
       ],
       "fix": [
@@ -117,11 +117,17 @@
         {
           "title": "Apple — Third-party SDK requirements",
           "url": "https://developer.apple.com/support/third-party-SDK-requirements/",
-          "retrieved": "2026-10-20"
+          "retrieved": "2026-10-23"
+        },
+        {
+          "title": "Apple — Reminder: Privacy requirement for app submissions starts May 1",
+          "url": "https://developer.apple.com/news/?id=pvszzano",
+          "retrieved": "2026-10-23"
         }
       ],
       "fix": [
         "Update the SDK to a version that ships its own PrivacyInfo.xcprivacy",
+        "If you add it as a binary dependency, make sure that version is signed (Apple also requires a valid signature, which this tool doesn't check)",
         "Contact the SDK vendor if no version ships a privacy manifest yet"
       ]
     },
@@ -159,7 +165,7 @@
         {
           "title": "Google Play — Target API level requirements",
           "url": "https://developer.android.com/google/play/requirements/target-sdk",
-          "retrieved": "2026-10-20"
+          "retrieved": "2026-10-23"
         }
       ],
       "fix": [
@@ -185,7 +191,7 @@
         {
           "title": "Google Play — Target API level requirements",
           "url": "https://developer.android.com/google/play/requirements/target-sdk",
-          "retrieved": "2026-10-20"
+          "retrieved": "2026-10-23"
         }
       ],
       "fix": [
@@ -374,12 +380,46 @@
       "id": "AND-64BIT-001",
       "platform": "android",
       "title": "32-bit native code must ship alongside a matching 64-bit ABI",
-      "timeline": [{ "from": "2021-08-01", "severity": "error" }],
+      "timeline": [
+        {
+          "from": "2019-08-01",
+          "severity": "error",
+          "formFactors": ["phone_tablet", "automotive", "xr"],
+          "note": "New apps and app updates with native code must include 64-bit versions; since 2021-08-01 Play also stops serving apps without them on 64-bit devices."
+        },
+        {
+          "from": "2026-08-01",
+          "severity": "error",
+          "formFactors": ["tv"],
+          "note": "Google TV and Android TV: new apps and app updates with native code must include 64-bit versions."
+        },
+        {
+          "from": "2026-09-15",
+          "severity": "error",
+          "formFactors": ["wear"],
+          "note": "Wear OS: Play blocks uploads of new apps and updates with native code that lack 64-bit versions."
+        }
+      ],
       "sources": [
         {
           "title": "Google Play — 64-bit requirement",
           "url": "https://developer.android.com/google/play/requirements/64-bit",
-          "retrieved": "2026-10-20"
+          "retrieved": "2026-10-23"
+        },
+        {
+          "title": "Android Developers Blog — Get your apps ready for the 64-bit requirement",
+          "url": "https://android-developers.googleblog.com/2019/01/get-your-apps-ready-for-64-bit.html",
+          "retrieved": "2026-10-23"
+        },
+        {
+          "title": "Android Developers Blog — 64-bit app compatibility for Google TV and Android TV",
+          "url": "https://android-developers.googleblog.com/2025/08/64-bit-app-compatibility-for-google-tv-android-tv.html",
+          "retrieved": "2026-10-23"
+        },
+        {
+          "title": "Android Developers Blog — Get your Wear OS apps ready for the 64-bit requirement",
+          "url": "https://android-developers.googleblog.com/2026/04/get-your-wear-os-apps-ready-for-64-bit-requirement.html",
+          "retrieved": "2026-10-23"
         }
       ],
       "fix": ["Build and ship a matching 64-bit (arm64-v8a / x86_64) native library"]
@@ -393,7 +433,7 @@
         {
           "title": "Android — Support 16 KB page sizes",
           "url": "https://developer.android.com/guide/practices/page-sizes",
-          "retrieved": "2026-10-20"
+          "retrieved": "2026-10-23"
         }
       ],
       "fix": [

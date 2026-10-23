@@ -19,7 +19,7 @@ Rules version: `2026.10.23`. Every rule is evaluated "as of" a chosen date again
 | `AND-16K-002`   | android  | GNU_RELRO segment must end 16 KB aligned (unless in its own LOAD segment)                   | 2025-11-01    |
 | `AND-16K-003`   | android  | Stored (uncompressed) native libraries must be 16 KB zip-aligned (APK only)                 | 2025-11-01    |
 | `AND-16K-004`   | android  | BundleConfig.pb should request 16 KB alignment when native libs are uncompressed (AAB only) | 2025-11-01    |
-| `AND-64BIT-001` | android  | 32-bit native code must ship alongside a matching 64-bit ABI                                | 2021-08-01    |
+| `AND-64BIT-001` | android  | 32-bit native code must ship alongside a matching 64-bit ABI                                | 2019-08-01    |
 | `AND-INFO-001`  | android  | No 64-bit-relevant native code detected                                                     | 1970-01-01    |
 
 ## `IOS-SDK-001` — Built with Xcode 26+ using the iOS 26 SDK
@@ -32,7 +32,7 @@ Severity timeline:
 
 Sources:
 
-- [Apple — Upcoming requirements](https://developer.apple.com/news/upcoming-requirements/) (retrieved 2026-10-20)
+- [Apple — Upcoming requirements](https://developer.apple.com/news/upcoming-requirements/) (retrieved 2026-10-23)
 
 Fix:
 
@@ -49,7 +49,7 @@ Severity timeline:
 
 Sources:
 
-- [Apple — Upcoming requirements](https://developer.apple.com/news/upcoming-requirements/) (retrieved 2026-10-20)
+- [Apple — Upcoming requirements](https://developer.apple.com/news/upcoming-requirements/) (retrieved 2026-10-23)
 
 Fix:
 
@@ -120,11 +120,13 @@ Severity timeline:
 
 Sources:
 
-- [Apple — Third-party SDK requirements](https://developer.apple.com/support/third-party-SDK-requirements/) (retrieved 2026-10-20)
+- [Apple — Third-party SDK requirements](https://developer.apple.com/support/third-party-SDK-requirements/) (retrieved 2026-10-23)
+- [Apple — Reminder: Privacy requirement for app submissions starts May 1](https://developer.apple.com/news/?id=pvszzano) (retrieved 2026-10-23)
 
 Fix:
 
 - Update the SDK to a version that ships its own PrivacyInfo.xcprivacy
+- If you add it as a binary dependency, make sure that version is signed (Apple also requires a valid signature, which this tool doesn't check)
 - Contact the SDK vendor if no version ships a privacy manifest yet
 
 ## `IOS-INFO-001` — Executable is encrypted — API detection is limited
@@ -153,7 +155,7 @@ Severity timeline:
 
 Sources:
 
-- [Google Play — Target API level requirements](https://developer.android.com/google/play/requirements/target-sdk) (retrieved 2026-10-20)
+- [Google Play — Target API level requirements](https://developer.android.com/google/play/requirements/target-sdk) (retrieved 2026-10-23)
 
 Fix:
 
@@ -170,7 +172,7 @@ Severity timeline:
 
 Sources:
 
-- [Google Play — Target API level requirements](https://developer.android.com/google/play/requirements/target-sdk) (retrieved 2026-10-20)
+- [Google Play — Target API level requirements](https://developer.android.com/google/play/requirements/target-sdk) (retrieved 2026-10-23)
 
 Fix:
 
@@ -264,11 +266,16 @@ Platform: android
 
 Severity timeline:
 
-- **error** from 2021-08-01
+- **error** from 2019-08-01 (phone_tablet, automotive, xr only) — New apps and app updates with native code must include 64-bit versions; since 2021-08-01 Play also stops serving apps without them on 64-bit devices.
+- **error** from 2026-08-01 (tv only) — Google TV and Android TV: new apps and app updates with native code must include 64-bit versions.
+- **error** from 2026-09-15 (wear only) — Wear OS: Play blocks uploads of new apps and updates with native code that lack 64-bit versions.
 
 Sources:
 
-- [Google Play — 64-bit requirement](https://developer.android.com/google/play/requirements/64-bit) (retrieved 2026-10-20)
+- [Google Play — 64-bit requirement](https://developer.android.com/google/play/requirements/64-bit) (retrieved 2026-10-23)
+- [Android Developers Blog — Get your apps ready for the 64-bit requirement](https://android-developers.googleblog.com/2019/01/get-your-apps-ready-for-64-bit.html) (retrieved 2026-10-23)
+- [Android Developers Blog — 64-bit app compatibility for Google TV and Android TV](https://android-developers.googleblog.com/2025/08/64-bit-app-compatibility-for-google-tv-android-tv.html) (retrieved 2026-10-23)
+- [Android Developers Blog — Get your Wear OS apps ready for the 64-bit requirement](https://android-developers.googleblog.com/2026/04/get-your-wear-os-apps-ready-for-64-bit-requirement.html) (retrieved 2026-10-23)
 
 Fix:
 
@@ -284,7 +291,7 @@ Severity timeline:
 
 Sources:
 
-- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-20)
+- [Android — Support 16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) (retrieved 2026-10-23)
 
 Fix:
 
