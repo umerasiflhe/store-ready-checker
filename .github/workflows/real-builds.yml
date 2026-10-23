@@ -93,9 +93,11 @@ jobs:
       - name: Install Android SDK packages
         run: |
           set -euo pipefail
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install \
-            'platforms;android-36' 'ndk;28.2.13676358' 'cmake;3.31.6' > /dev/null
+          sdkmanager="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          # `yes` dies of SIGPIPE once sdkmanager stops reading, which pipefail would turn into a
+          # step failure.
+          (yes || true) | "$sdkmanager" --licenses > /dev/null
+          "$sdkmanager" --install 'platforms;android-36' 'ndk;28.2.13676358' 'cmake;3.31.6'
 
       - name: Build .aab variants
         working-directory: fixtures/real-builds/android
