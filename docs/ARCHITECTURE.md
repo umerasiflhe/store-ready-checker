@@ -10,10 +10,13 @@ store-ready/
 ├── apps/web/         # Vite + vanilla TypeScript UI, Web Worker, PWA
 ├── cli/              # Swift package: StoreReadyCore (library) + storeready (executable)
 ├── proto/            # vendored aapt2 / bundletool .proto files
-├── fixtures/          # generators (TS), generated files, golden expected reports
-├── e2e/              # Playwright tests
-├── scripts/          # verify, check-repo, sync-rules, gen-rules-doc, conformance
-└── docs/             # this file, SPEC, RULES (generated), TESTING, CI-CD, PRIVACY, adr/
+├── fixtures/         # generators (TS), generated files, golden expected reports,
+│                     #   real-builds/ (Xcode and Gradle projects built in CI)
+├── e2e/              # Playwright tests (also the post-deploy smoke test)
+├── scripts/          # verify, check-repo, sync-rules, gen-rules-doc, conformance, rules-watch,
+│                     #   check-real-build, gen-images, record-demo/, changelog-section
+├── .github/          # workflows (CI, deploy, release, CodeQL, real-builds, rules-watch)
+└── docs/             # this file, SPEC, RULES (generated), TESTING, CI-CD, PRIVACY, media/, adr/
 ```
 
 ## Data flow (web)
@@ -58,3 +61,13 @@ is never reopened or re-read. `packages/core`'s public API is split accordingly:
 See [`docs/adr/`](adr/) for the reasoning behind running analysis entirely on-device, the zip
 reading strategy, GitHub Pages hosting, and maintaining the Swift CLI as an independent
 implementation verified by conformance tests rather than a thin wrapper.
+
+## Delivery
+
+Every push runs `ci.yml`; a green run on `main` triggers `deploy.yml`, which publishes
+`apps/web/dist` to GitHub Pages and then runs the analyze and privacy specs against the live URL.
+A `v*.*.*` tag runs `release.yml`, which builds the macOS universal and Linux CLI tarballs and
+publishes them with `SHA256SUMS`. Two scheduled workflows keep the rules honest: `real-builds.yml`
+builds real Xcode and Gradle artifacts and checks that both implementations agree on them, and
+`rules-watch.yml` re-hashes each official source in `rules/sources.lock.json` and opens a
+`rules-change` issue when one changes. Details: [CI-CD.md](CI-CD.md).

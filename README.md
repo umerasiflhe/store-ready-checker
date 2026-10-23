@@ -89,6 +89,60 @@ the file couldn't be analysed or the arguments are invalid.
 
 ![storeready in a terminal: an iOS build blocked for a missing privacy manifest, and an Android bundle whose 16 KB warning becomes an error on 2027-02-01](docs/media/cli-demo.gif)
 
+## Use in CI
+
+Fail a build before it reaches the store. On a GitHub Actions macOS runner (use the Linux tarball
+on `ubuntu-latest`):
+
+```yaml
+- name: Check the build with Store Ready
+  run: |
+    v=0.9.0
+    base="https://github.com/umerasiflhe/store-ready-checker/releases/download/v$v"
+    curl -fsSLO "$base/storeready-$v-macos-universal.tar.gz"
+    curl -fsSLO "$base/SHA256SUMS"
+    shasum -a 256 -c SHA256SUMS --ignore-missing
+    tar -xzf "storeready-$v-macos-universal.tar.gz"
+    "./storeready-$v-macos-universal/storeready" check build/MyApp.ipa \
+      --format markdown --fail-on error >> "$GITHUB_STEP_SUMMARY"
+```
+
+The report lands in the job summary, and the step fails when the build would be blocked. Use
+`--fail-on warning` to fail on upcoming deadlines too, or `--as-of` to check against a future date.
+
+## What it doesn't check
+
+Store Ready checks the machine-readable upload rules in the table above, and nothing else:
+
+- **App Review and Play policy.** Content, behaviour, metadata, and the store-listing questions
+  (age rating, App Privacy details, Play's Data safety form) are judged by people and forms, not
+  by the binary.
+- **Signing and provisioning.** Certificates, provisioning profiles and entitlements, and the
+  signatures Apple requires for listed third-party SDKs shipped as binaries.
+- **Whether your privacy manifest is truthful.** It checks that detected required-reason APIs are
+  declared with valid reason codes, not that the reasons match what your code does.
+- **APIs it can't see.** Required-reason detection reads imported symbols and Objective-C
+  selectors, so APIs reached dynamically (`dlsym`, `NSSelectorFromString`) may be missed, and an
+  encrypted App Store binary hides its selectors (`IOS-INFO-001` says so).
+- **Rules that changed after the rules version shown in the app.** A weekly job watches Apple's
+  and Google's pages and opens an issue when one changes, but always confirm a deadline against
+  the linked source in [docs/RULES.md](docs/RULES.md).
+
+It never calls App Store Connect or the Play Console, and it never modifies your build.
+
+## How it works
+
+The web app reads your build in a Web Worker: it opens the zip's central directory, slices out
+only the entries it needs (`Info.plist`, Mach-O executables, privacy manifests, the Android
+manifest, native libraries, `BundleConfig.pb`), parses them, and evaluates the rules in
+[rules/rules.json](rules/rules.json), where every threshold and date lives with its source. The
+`storeready` CLI is a separate Swift implementation of the same parsers over the same rule data,
+and CI proves the two produce identical JSON for every test fixture and for real Xcode and Gradle
+builds.
+
+More: [Architecture](docs/ARCHITECTURE.md) · [Spec](docs/SPEC.md) · [Rules](docs/RULES.md) ·
+[Testing](docs/TESTING.md) · [CI/CD](docs/CI-CD.md) · [Privacy](docs/PRIVACY.md)
+
 ## Develop
 
 ```bash
@@ -104,9 +158,11 @@ npm test              # unit tests
 
 Needs Node (version in `.nvmrc`), Xcode 26 for the Swift CLI, and `brew install actionlint shellcheck`. Every commit runs the linters and unit tests through git hooks; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Docs
+## Contributing
 
-[Spec](docs/SPEC.md) · [Architecture](docs/ARCHITECTURE.md) · [Testing](docs/TESTING.md) · [CI/CD](docs/CI-CD.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+Issues and pull requests are welcome; read [CONTRIBUTING.md](CONTRIBUTING.md) first. If Apple or
+Google changes a rule, open a "Rule change request" issue with a link to the official page. To report a
+bug, attach the JSON report, never the build itself. Security issues: [SECURITY.md](SECURITY.md).
 
 ## License
 

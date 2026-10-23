@@ -31,7 +31,9 @@ Acceptance criteria per rule:
 
 - Backed by an official source URL and a retrieved date.
 - Evaluated "as of" a user-selectable date, against a severity timeline (not a hard-coded
-  threshold).
+  threshold). An Android timeline entry can be limited to form factors (TV and Wear OS have their
+  own 16 KB and 64-bit dates), resolved against the manifest-inferred form factor or the user's
+  override.
 - `certain` findings come from metadata read directly off the bundle; `heuristic` findings come
   from inference (e.g. a symbol scan) and are badged as such in the report and UI.
 
@@ -47,4 +49,4 @@ severity, then rule ID, then location, for deterministic golden tests.
 No accounts, no server, no uploads, no analytics, no telemetry, no cookies, no signing/provisioning
 validation, no App Store Connect / Play Console API calls, no auto-fixing of builds. Things the
 tool cannot check (age-rating answers, store listing content, signing identity) are documented in
-the README's "What this doesn't check" section, not treated as rules.
+the README's "What it doesn't check" section, not treated as rules.

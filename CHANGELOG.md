@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- The README follows its final v1 order, adding "Use in CI" (a tested GitHub Actions step),
+  "What it doesn't check", "How it works" and "Contributing". SPEC, ARCHITECTURE (now with a
+  delivery section) and TESTING describe what shipped.
 - `IOS-PRIV-004` cites Apple's April 2024 announcement for its 2024-05-01 start, and its fix
   steps mention the SDK signature Apple also requires (which this tool doesn't check). Every rule
   source is re-read as of 2026-10-23.
