@@ -8,7 +8,10 @@ const destDir = join(repoRoot, 'cli/Sources/StoreReadyCore/Resources');
 
 function main(): void {
   const checkOnly = process.argv.includes('--check');
-  const files = readdirSync(sourceDir).filter((file) => file.endsWith('.json'));
+  // sources.lock.json is rules-watch bookkeeping; the CLI never reads it.
+  const files = readdirSync(sourceDir).filter(
+    (file) => file.endsWith('.json') && file !== 'sources.lock.json',
+  );
 
   if (!existsSync(destDir)) {
     if (checkOnly) {

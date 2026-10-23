@@ -1,35 +1,39 @@
 {
-  "note": "Populated by rules-watch.yml (Milestone 5), which hashes each page's relevant text and opens a rules-change issue on drift. Until that workflow runs, sha256/checkedAt stay null.",
+  "note": "Maintained by scripts/rules-watch.ts: rules-watch.yml re-hashes each page's relevant text weekly and opens a rules-change issue on drift; accept a reviewed change with `npx tsx scripts/rules-watch.ts --update`. `fetchUrl`, when present, is what is actually fetched: a machine-readable twin of a JS-rendered page, or the page pinned to English (devsite otherwise localises by visitor).",
   "sources": [
     {
       "url": "https://developer.apple.com/news/upcoming-requirements/",
-      "sha256": null,
-      "checkedAt": null
+      "sha256": "7fb8151d1b8f8a9760e42cde88a6bfc294c539c0c139eb1daac21a3d7b05eaea",
+      "checkedAt": "2026-10-23"
     },
     {
       "url": "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api",
-      "sha256": null,
-      "checkedAt": null
+      "fetchUrl": "https://developer.apple.com/tutorials/data/documentation/bundleresources/describing-use-of-required-reason-api.json",
+      "sha256": "0d303f5df51133fc6c44c0bd36b6fdcbcd4f352c145491da79df733bfe332455",
+      "checkedAt": "2026-10-23"
     },
     {
       "url": "https://developer.apple.com/support/third-party-SDK-requirements/",
-      "sha256": null,
-      "checkedAt": null
+      "sha256": "c6b04c6e1c336227ce4d160c02149cf112dfb9770c0014dc1390b8f011c243a6",
+      "checkedAt": "2026-10-23"
     },
     {
       "url": "https://developer.android.com/google/play/requirements/target-sdk",
-      "sha256": null,
-      "checkedAt": null
+      "fetchUrl": "https://developer.android.com/google/play/requirements/target-sdk?hl=en",
+      "sha256": "c3fae03961251741f63890548925fc246a7cab8391a57516f13ebee841050ab5",
+      "checkedAt": "2026-10-23"
     },
     {
       "url": "https://developer.android.com/guide/practices/page-sizes",
-      "sha256": null,
-      "checkedAt": null
+      "fetchUrl": "https://developer.android.com/guide/practices/page-sizes?hl=en",
+      "sha256": "6d8c09c41d29896601e62c1c8b7a5f6f8459053fee6028a84420e01e62af66a7",
+      "checkedAt": "2026-10-23"
     },
     {
       "url": "https://developer.android.com/google/play/requirements/64-bit",
-      "sha256": null,
-      "checkedAt": null
+      "fetchUrl": "https://developer.android.com/google/play/requirements/64-bit?hl=en",
+      "sha256": "aac154b70554280a8c1138b6d9a29fca6f0c86203f6c707eec3301651805747b",
+      "checkedAt": "2026-10-23"
     }
   ]
 }

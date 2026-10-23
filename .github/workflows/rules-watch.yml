@@ -1,0 +1,86 @@
+name: Rules watch
+
+# Re-hashes the official Apple/Google pages behind rules/rules.json and opens (or comments on) a
+# `rules-change` issue per page whose text changed. It never commits: a maintainer reviews the
+# page, updates rules.json if needed, and accepts the new hash with
+# `npx tsx scripts/rules-watch.ts --update`.
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - rules/sources.lock.json
+      - scripts/rules-watch.ts
+      - .github/workflows/rules-watch.yml
+
+concurrency:
+  group: rules-watch
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  watch:
+    name: watch
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Hash watched sources
+        id: hash
+        run: |
+          set -uo pipefail
+          status=0
+          npx tsx scripts/rules-watch.ts --check --drift-out drift.json || status=$?
+          # 0 = no drift, 1 = drift (drift.json written); anything else is a real failure.
+          if [ "$status" -gt 1 ] || [ ! -f drift.json ]; then exit "$status"; fi
+          echo "count=$(jq length drift.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update rules-change issues
+        if: steps.hash.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          jq -c '.[]' drift.json | while read -r entry; do
+            url=$(jq -r .url <<<"$entry")
+            title="Official source changed: $url"
+            previous=$(jq -r '.previous // "(never hashed)"' <<<"$entry")
+            current=$(jq -r .current <<<"$entry")
+            {
+              echo "rules-watch found that the text of an official page behind \`rules/rules.json\` changed."
+              echo
+              echo "- Page: $url"
+              echo "- Previous hash: \`$previous\`"
+              echo "- Current hash: \`$current\`"
+              echo "- Run: $RUN_URL"
+              echo
+              echo "Review the page against every rule citing it. Update \`rules/rules.json\` (with the add-store-rule skill) if a value, date or wording changed, then accept the new hash with \`npx tsx scripts/rules-watch.ts --update\`."
+            } > issue-body.md
+            existing=$(gh issue list --label rules-change --state open --json number,title \
+              --jq ".[] | select(.title == \"$title\") | .number" | head -n1)
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --body-file issue-body.md
+            else
+              gh issue create --label rules-change --title "$title" --body-file issue-body.md
+            fi
+          done
+          echo "::warning::$(jq length drift.json) watched source(s) changed — see the rules-change issues."
