@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Changed
+### Fixed
 
 - CI: the `e2e` job caches Playwright's ~120 MB of apt packages, so a slow Ubuntu mirror no longer
   times it out.
