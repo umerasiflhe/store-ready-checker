@@ -12,7 +12,8 @@ Run `./scripts/verify.sh` from the repo root. It runs, in order:
 3. `npm run typecheck`
 4. `npm run test:unit`
 5. `npm run test:swift` — only when on macOS and `cli/Package.swift` exists.
-6. `npx tsx scripts/conformance.ts` — no-op until Milestone 4 adds a `check` command to diff.
+6. `npx tsx scripts/conformance.ts` — builds `storeready` and diffs its JSON against the TS core
+   on every fixture.
 7. `npx tsx scripts/sync-rules.ts --check` and `npx tsx scripts/gen-rules-doc.ts --check` — fail if
    `cli/Sources/StoreReadyCore/Resources`, `docs/RULES.md`, or the README rules table are stale.
 
@@ -23,8 +24,7 @@ Pass `--full` (`./scripts/verify.sh --full`) to additionally run:
 
 - `./scripts/test-git-hooks.sh` — proves the git hooks actually reject bad commits, in a temporary
   clone. Slower (clones the repo, makes several throwaway commits).
-- `npm run test:e2e` — the Playwright suite. Has no specs until Milestone 3; do not treat
-  "No tests found" as a real failure before then.
+- `npm run test:e2e` — the Playwright suite on every browser project.
 
 If any step fails, fix the underlying issue — never weaken a test, lint rule, or coverage gate to
 make `verify` pass, and never bypass the git hooks to get a commit through.
