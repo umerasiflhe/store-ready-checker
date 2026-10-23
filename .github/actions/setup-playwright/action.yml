@@ -1,0 +1,77 @@
+name: Set up Playwright
+description: >-
+  Install Playwright browsers and their system packages on an Ubuntu runner, caching both. The
+  runner's apt mirror sometimes serves the ~120 MB of packages at ~70 KB/s, which no timeout
+  survives, so the downloaded .debs are cached per runner image and Playwright version.
+inputs:
+  browsers:
+    description: Space-separated browsers to install (empty for all of them).
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - name: Make apt time out and retry stalled downloads, and keep what it downloads
+      shell: bash
+      run: |
+        printf 'Acquire::http::Timeout "30";\nAcquire::https::Timeout "30";\nAcquire::Retries "5";\nBinary::apt::APT::Keep-Downloaded-Packages "true";\n' \
+          | sudo tee /etc/apt/apt.conf.d/99-ci-network > /dev/null
+
+    - name: Read Playwright version and runner image
+      id: playwright
+      shell: bash
+      env:
+        BROWSERS: ${{ inputs.browsers }}
+      run: |
+        echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+        echo "image=${ImageOS}-${ImageVersion}" >> "$GITHUB_OUTPUT"
+        echo "set=${BROWSERS:-all}" | tr ' ' '-' >> "$GITHUB_OUTPUT"
+
+    - name: Cache Playwright's apt packages
+      id: apt-cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/apt-archives
+        key: playwright-apt-${{ steps.playwright.outputs.image }}-${{ steps.playwright.outputs.version }}-${{ steps.playwright.outputs.set }}
+        restore-keys: playwright-apt-${{ steps.playwright.outputs.image }}-
+
+    - name: Restore cached apt packages
+      # Also runs on a restore-keys (partial) match, which leaves cache-hit false.
+      shell: bash
+      run: |
+        if [ -d ~/apt-archives ]; then
+          sudo find ~/apt-archives -maxdepth 1 -name '*.deb' -exec cp {} /var/cache/apt/archives/ \;
+        fi
+
+    - name: Cache Playwright browsers
+      id: browser-cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-${{ steps.playwright.outputs.set }}
+
+    - name: Install Playwright browsers and system packages
+      if: steps.browser-cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        BROWSERS: ${{ inputs.browsers }}
+      # Composite steps can't set timeout-minutes, hence `timeout`.
+      run: |
+        read -ra browsers <<< "$BROWSERS"
+        timeout 15m npx playwright install --with-deps "${browsers[@]}"
+
+    - name: Install Playwright system packages
+      if: steps.browser-cache.outputs.cache-hit == 'true'
+      shell: bash
+      env:
+        BROWSERS: ${{ inputs.browsers }}
+      run: |
+        read -ra browsers <<< "$BROWSERS"
+        timeout 10m npx playwright install-deps "${browsers[@]}"
+
+    - name: Collect apt packages for the cache
+      if: steps.apt-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        mkdir -p ~/apt-archives
+        find /var/cache/apt/archives -maxdepth 1 -name '*.deb' -exec cp {} ~/apt-archives/ \;
