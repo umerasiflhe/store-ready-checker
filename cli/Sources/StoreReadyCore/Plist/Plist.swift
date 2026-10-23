@@ -38,13 +38,28 @@ private func convertToPlistValue(_ object: Any) -> PlistValue {
   if let string = object as? String {
     return .string(string)
   }
+  #if !canImport(Darwin)
+    // swift-corelibs-foundation may hand back a native Bool; check the exact type, since `as?
+    // Bool` would also bridge a numeric NSNumber of 0 or 1.
+    if let bool = object as? Bool, type(of: object) == Bool.self {
+      return .bool(bool)
+    }
+  #endif
   if let number = object as? NSNumber {
     // A plist <true/>/<false/> decodes as an NSNumber wrapping a CFBoolean — distinguish that
     // from a numeric NSNumber, since PlistValue (like TS's PlistValue) keeps bool and number
     // as separate cases.
-    if CFGetTypeID(number) == CFBooleanGetTypeID() {
-      return .bool(number.boolValue)
-    }
+    #if canImport(Darwin)
+      if CFGetTypeID(number) == CFBooleanGetTypeID() {
+        return .bool(number.boolValue)
+      }
+    #else
+      // No CoreFoundation type IDs off Darwin: corelibs boxes booleans with objCType "c", while
+      // plist integers and reals are always 64-bit ("q"/"d").
+      if String(cString: number.objCType) == "c" {
+        return .bool(number.boolValue)
+      }
+    #endif
     return .number(number.doubleValue)
   }
   return .null
