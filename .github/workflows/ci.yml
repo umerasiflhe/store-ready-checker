@@ -59,11 +59,8 @@ jobs:
       - name: Check documentation links
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
-          # --exclude covers our own future Pages URL, which 404s until deploy.yml ships it in
-          # Milestone 5. Remove the --exclude once that milestone lands.
           args: >-
             --no-progress --max-retries 3 --timeout 20
-            --exclude 'https://umerasiflhe\.github\.io/store-ready-checker'
             './README.md' './docs/**/*.md'
           fail: true
 
