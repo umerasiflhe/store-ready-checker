@@ -1,7 +1,7 @@
 {
   "ok": true,
   "value": {
-    "tool": { "name": "store-ready", "version": "0.9.0", "rulesVersion": "2026.10.23" },
+    "tool": { "name": "store-ready", "version": "1.0.0", "rulesVersion": "2026.10.23" },
     "asOf": "2026-07-31",
     "input": { "fileName": "android-aab-64bit-tv-missing.aab", "sizeBytes": 566, "kind": "aab" },
     "app": { "platform": "android", "id": "com.example.app", "version": "1.0", "build": "1" },
