@@ -28,6 +28,7 @@
     "proto:gen": "tsx scripts/gen-proto.ts",
     "rules:sync": "tsx scripts/sync-rules.ts",
     "rules:doc": "tsx scripts/gen-rules-doc.ts",
+    "gen:images": "tsx scripts/gen-images.ts",
     "gen:web-samples": "tsx scripts/gen-web-samples.ts",
     "dev": "npm run dev -w apps/web",
     "build": "npm run build -w apps/web",
