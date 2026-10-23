@@ -308,10 +308,12 @@ private func checkAnd64bit001(
   _ options: AndroidRuleCheckOptions?
 ) -> [Finding] {
   let abis = abisPresent(facts)
+  let formFactor = formFactorOf(facts, options)
   var findings: [Finding] = []
   for (thirtyTwoBit, sixtyFourBit) in thirtyTwoToSixtyFourBitAbi {
     if !abis.contains(thirtyTwoBit) || abis.contains(sixtyFourBit) { continue }
-    let resolved = resolveTimelineSeverity(rule.timeline, asOf: asOf)
+    let resolved = resolveTimelineSeverity(
+      rule.timeline, asOf: asOf, formFactor: formFactor.rawValue)
     findings.append(
       buildFinding(
         rule,
@@ -320,7 +322,10 @@ private func checkAnd64bit001(
           title: "\(thirtyTwoBit) native code ships without a matching \(sixtyFourBit) library",
           message:
             "Google Play requires a matching 64-bit native library alongside any 32-bit one.",
-          evidence: ["abi": .string(thirtyTwoBit), "missingAbi": .string(sixtyFourBit)]
+          evidence: [
+            "abi": .string(thirtyTwoBit), "missingAbi": .string(sixtyFourBit),
+            "formFactor": .string(formFactor.rawValue),
+          ]
         )
       )
     )

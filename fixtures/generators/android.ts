@@ -207,6 +207,19 @@ async function generate64BitMissing(): Promise<void> {
   ]);
 }
 
+/** 32-bit-only TV and Wear OS apps, for their later 64-bit dates. */
+async function generate64BitFormFactorMissing(): Promise<void> {
+  const thirtyTwoBitOnly = aabNativeLib('base', 'armeabi-v7a', [ALIGNED_LOAD]);
+  await writeFixture('android-aab-64bit-tv-missing.aab', [
+    aabManifestEntry('base', { ...CLEAN_MANIFEST, usesFeatures: ['android.software.leanback'] }),
+    thirtyTwoBitOnly,
+  ]);
+  await writeFixture('android-aab-64bit-wear-missing.aab', [
+    aabManifestEntry('base', { ...CLEAN_MANIFEST, usesFeatures: ['android.hardware.type.watch'] }),
+    thirtyTwoBitOnly,
+  ]);
+}
+
 async function generateMalformedManifest(): Promise<void> {
   await writeFixture('android-aab-malformed-manifest.aab', [
     { name: 'base/manifest/AndroidManifest.xml', data: new Uint8Array([0xff, 0xff, 0xff]) },
@@ -280,6 +293,7 @@ async function main(): Promise<void> {
   await generate16kRelroExempt();
   await generate16kBundleConfigMissingFlag();
   await generate64BitMissing();
+  await generate64BitFormFactorMissing();
   await generateMalformedManifest();
   await generateApkPassing();
   await generateApkZipMisaligned();

@@ -23,12 +23,17 @@
         },
         "fix": [
           "Update the SDK to a version that ships its own PrivacyInfo.xcprivacy",
+          "If you add it as a binary dependency, make sure that version is signed (Apple also requires a valid signature, which this tool doesn't check)",
           "Contact the SDK vendor if no version ships a privacy manifest yet"
         ],
         "sources": [
           {
             "title": "Apple — Third-party SDK requirements",
             "url": "https://developer.apple.com/support/third-party-SDK-requirements/"
+          },
+          {
+            "title": "Apple — Reminder: Privacy requirement for app submissions starts May 1",
+            "url": "https://developer.apple.com/news/?id=pvszzano"
           }
         ]
       }

@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- `IOS-PRIV-004` cites Apple's April 2024 announcement for its 2024-05-01 start, and its fix
+  steps mention the SDK signature Apple also requires (which this tool doesn't check). Every rule
+  source is re-read as of 2026-10-23.
 - The 16 KB rules' 2025-11-01 warning start now cites Google's May 2025 announcement, since the
   page-sizes guide no longer mentions it.
 - The required-reason API and listed-SDK seed data are verified against Apple's current pages
@@ -35,6 +38,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- `AND-64BIT-001` uses Google Play's dates per form factor: required since 2019-08-01 for phone,
+  tablet, Automotive and XR apps (not 2021-08-01, when Play stopped serving 32-bit-only apps on
+  64-bit devices), from 2026-08-01 for TV and from 2026-09-15 for Wear OS. Earlier "as of" dates
+  for TV and Wear apps now give an info finding instead of an error.
 - `IOS-PRIV-002` no longer reports an API that Apple lists under two categories when the privacy
   manifest declares either one (e.g. `getattrlist` with only DiskSpace declared).
 - `AND-TSDK-002` uses Google Play's per-form-factor minimum for staying available to new users

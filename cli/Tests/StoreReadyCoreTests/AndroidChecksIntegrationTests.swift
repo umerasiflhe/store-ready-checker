@@ -72,6 +72,30 @@ private let androidCases: [Case] = [
     kind: .aab
   ),
   Case(
+    fixture: "android-aab-64bit-tv-missing",
+    golden: "android-aab-64bit-tv-missing-before",
+    asOf: "2026-07-31",
+    kind: .aab
+  ),
+  Case(
+    fixture: "android-aab-64bit-tv-missing",
+    golden: "android-aab-64bit-tv-missing-error",
+    asOf: "2026-08-01",
+    kind: .aab
+  ),
+  Case(
+    fixture: "android-aab-64bit-wear-missing",
+    golden: "android-aab-64bit-wear-missing-before",
+    asOf: "2026-09-14",
+    kind: .aab
+  ),
+  Case(
+    fixture: "android-aab-64bit-wear-missing",
+    golden: "android-aab-64bit-wear-missing-error",
+    asOf: "2026-09-15",
+    kind: .aab
+  ),
+  Case(
     fixture: "android-aab-missing-uses-sdk",
     golden: "android-aab-missing-uses-sdk",
     asOf: "2026-10-20",

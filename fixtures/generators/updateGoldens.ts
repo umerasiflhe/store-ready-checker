@@ -104,6 +104,26 @@ const ANDROID_FIXTURES: readonly AndroidFixtureCase[] = [
   androidFixture('android-aab-16k-relro-exempt.aab'),
   androidFixture('android-aab-16k-bundleconfig-missing-flag.aab'),
   androidFixture('android-aab-64bit-missing.aab'),
+  androidFixture(
+    'android-aab-64bit-tv-missing.aab',
+    '2026-07-31',
+    'android-aab-64bit-tv-missing-before',
+  ),
+  androidFixture(
+    'android-aab-64bit-tv-missing.aab',
+    '2026-08-01',
+    'android-aab-64bit-tv-missing-error',
+  ),
+  androidFixture(
+    'android-aab-64bit-wear-missing.aab',
+    '2026-09-14',
+    'android-aab-64bit-wear-missing-before',
+  ),
+  androidFixture(
+    'android-aab-64bit-wear-missing.aab',
+    '2026-09-15',
+    'android-aab-64bit-wear-missing-error',
+  ),
   androidFixture('android-aab-malformed-manifest.aab'),
   androidFixture('android-apk-passing.apk'),
   androidFixture('android-apk-zip-misaligned.apk'),

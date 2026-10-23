@@ -274,17 +274,23 @@ function abisPresent(facts: AndroidFacts): ReadonlySet<string> {
   return new Set(facts.nativeLibs.libraries.map((lib) => lib.abi));
 }
 
-function checkAnd64bit001(facts: AndroidFacts, rule: Rule, asOf: string): Finding[] {
+function checkAnd64bit001(
+  facts: AndroidFacts,
+  rule: Rule,
+  asOf: string,
+  options?: AndroidRuleCheckOptions,
+): Finding[] {
   const abis = abisPresent(facts);
+  const formFactor = formFactorOf(facts, options);
   const findings: Finding[] = [];
   for (const [thirtyTwoBit, sixtyFourBit] of Object.entries(THIRTY_TWO_TO_SIXTY_FOUR_BIT_ABI)) {
     if (!abis.has(thirtyTwoBit) || abis.has(sixtyFourBit)) continue;
-    const resolved = resolveTimelineSeverity(rule.timeline, asOf);
+    const resolved = resolveTimelineSeverity(rule.timeline, asOf, formFactor);
     findings.push(
       buildFinding(rule, resolved, {
         title: `${thirtyTwoBit} native code ships without a matching ${sixtyFourBit} library`,
         message: 'Google Play requires a matching 64-bit native library alongside any 32-bit one.',
-        evidence: { abi: thirtyTwoBit, missingAbi: sixtyFourBit },
+        evidence: { abi: thirtyTwoBit, missingAbi: sixtyFourBit, formFactor },
       }),
     );
   }
