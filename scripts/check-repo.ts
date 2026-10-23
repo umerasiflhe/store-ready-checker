@@ -42,6 +42,8 @@ const REQUIRED_TOP_LEVEL_FILES = [
 ];
 const FIXTURE_FILE_LIMIT_BYTES = 200 * 1024;
 const REPO_FILE_LIMIT_BYTES = 5 * 1024 * 1024;
+// README demo GIFs (brief §9.1).
+const MEDIA_GIF_LIMIT_BYTES = 4 * 1024 * 1024;
 const BINARY_FILE_EXT = /\.(ipa|aab|apk)$/;
 const BINARY_DIR_SEGMENT = /\.(xcarchive|dSYM)(\/|$)/;
 
@@ -131,6 +133,11 @@ function checkFileSizes(): void {
     if (file.startsWith('fixtures/files/') && size > FIXTURE_FILE_LIMIT_BYTES) {
       problems.push(
         `${file} is ${String(size)} bytes, over the ${String(FIXTURE_FILE_LIMIT_BYTES)} byte fixture limit`,
+      );
+    }
+    if (file.startsWith('docs/media/') && file.endsWith('.gif') && size > MEDIA_GIF_LIMIT_BYTES) {
+      problems.push(
+        `${file} is ${String(size)} bytes, over the ${String(MEDIA_GIF_LIMIT_BYTES)} byte demo GIF limit`,
       );
     }
     if (size > REPO_FILE_LIMIT_BYTES) {

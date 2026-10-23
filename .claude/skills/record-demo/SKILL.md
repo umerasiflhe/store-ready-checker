@@ -4,13 +4,17 @@ description: Record the web and CLI demo GIFs for the README. Only run when the 
 disable-model-invocation: true
 ---
 
-1. **Web demo**: use Playwright's video recording against the deployed (or locally built) web app.
-   Script: load a sample → get a `blocked` report → change the "Check as of" date and show a
-   finding flip from warning to error. Save the raw video under `docs/media/raw/` (gitignored).
-2. **Convert to GIF** with `ffmpeg`, using a two-pass palette generation for quality, ≤ 4 MB,
-   800 px wide. Save to `docs/media/` (committed).
-3. **CLI demo**: record with a VHS `.tape` file (`vhs record`), scripting `storeready check` on a
-   sample fixture with `--format text`. Save the resulting GIF to `docs/media/` too.
-4. **Update the README** to reference the new GIFs in the order specified in
-   `docs/BUILD_BRIEF.md` §9.1 (web demo GIF near the top, CLI GIF in the CLI section).
-5. Keep `docs/media/raw/` out of git (already gitignored) — only the final GIFs are committed.
+1. **Web demo** (`scripts/record-demo/web.ts`): build and serve the app (`npm run build && npm run
+preview`), then run `npx tsx scripts/record-demo/web.ts`. It records Playwright video of the
+   "Android — blocked" sample, opens its `AND-16K-001` warning, moves "Check as of" to 2027-02-15
+   (a day that reads the same in either date order) and reopens the finding, now an error. The raw
+   video goes to `docs/media/raw/` (gitignored); ffmpeg's two-pass palette turns it into
+   `docs/media/web-demo.gif` at 800 px and 12 fps, and the script fails if it's over 4 MB.
+2. **CLI demo** (`scripts/record-demo/cli.tape`): `swift build --package-path cli -c release
+--product storeready`, then `vhs scripts/record-demo/cli.tape` (`brew install vhs`). It writes
+   `docs/media/cli-demo.gif`.
+3. **Look at the result** before committing: extract a few frames with
+   `ffmpeg -ss <seconds> -i docs/media/web-demo.gif -frames:v 1 frame.png` and read them.
+4. **Re-record after a version bump**: the web demo's footer shows the tool and rules versions.
+5. The README already embeds both GIFs (web near the top, CLI in the CLI section, per
+   `docs/BUILD_BRIEF.md` §9.1); `scripts/check-repo.ts` fails if either is over 4 MB.

@@ -2,6 +2,8 @@
 
 Check an iOS or Android build against the current App Store Connect and Google Play upload rules before you upload it. It runs in your browser, and your file is never uploaded.
 
+![Store Ready in the browser: the Android sample needs attention for a 16 KB page-alignment warning, and moving "Check as of" past 1 February 2027 turns it into a blocking error](docs/media/web-demo.gif)
+
 **Try it: <https://umerasiflhe.github.io/store-ready-checker/>**
 
 [![CI](https://github.com/umerasiflhe/store-ready-checker/actions/workflows/ci.yml/badge.svg)](https://github.com/umerasiflhe/store-ready-checker/actions/workflows/ci.yml)
@@ -84,6 +86,8 @@ storeready --version
 
 Exit codes: `0` nothing at or above `--fail-on` (default `error`); `1` findings at or above it; `2`
 the file couldn't be analysed or the arguments are invalid.
+
+![storeready in a terminal: an iOS build blocked for a missing privacy manifest, and an Android bundle whose 16 KB warning becomes an error on 2027-02-01](docs/media/cli-demo.gif)
 
 ## Develop
 
