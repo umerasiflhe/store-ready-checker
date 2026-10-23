@@ -1,0 +1,23 @@
+name: Rule change request
+description: An Apple or Google requirement changed, or a rule is missing or wrong.
+labels: [rules-change]
+body:
+  - type: input
+    id: rule
+    attributes:
+      label: Rule ID (if it exists)
+      placeholder: e.g. AND-TSDK-001
+  - type: input
+    id: source
+    attributes:
+      label: Official source URL
+      description: Apple or Google documentation only. Rules without an official source are not added.
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: What changed?
+      description: Quote the relevant wording and any dates or thresholds.
+    validations:
+      required: true
