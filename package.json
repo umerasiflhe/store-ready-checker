@@ -13,7 +13,7 @@
   "scripts": {
     "lint": "eslint . --max-warnings 0 && npm run lint:swift && npx markdownlint-cli2 && npm run lint:actions && npm run lint:shell",
     "lint:fix": "eslint . --fix --max-warnings 0",
-    "lint:swift": "bash -c '[ ! -d cli ] || (cd cli && (swift format lint --strict --recursive Sources Tests Package.swift 2>/dev/null || xcrun swift-format lint --strict --recursive Sources Tests Package.swift))'",
+    "lint:swift": "bash -c '[ ! -d cli ] || ! command -v swift >/dev/null 2>&1 || (cd cli && (swift format lint --strict --recursive Sources Tests Package.swift 2>/dev/null || xcrun swift-format lint --strict --recursive Sources Tests Package.swift))'",
     "lint:actions": "bash -c '[ ! -d .github/workflows ] || actionlint'",
     "lint:shell": "bash -c 'shopt -s nullglob; files=(scripts/*.sh .claude/hooks/*.sh); [ ${#files[@]} -eq 0 ] || shellcheck \"${files[@]}\"'",
     "format": "prettier --write .",

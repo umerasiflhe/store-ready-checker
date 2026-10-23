@@ -92,9 +92,6 @@ jobs:
       - name: Unit tests + coverage gate
         run: npm run test:coverage
 
-      - name: Conformance
-        run: npx tsx scripts/conformance.ts
-
       - name: Rules sync freshness
         run: npx tsx scripts/sync-rules.ts --check
 
@@ -141,3 +138,42 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  swift:
+    name: swift
+    runs-on: macos-26
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: swift-format lint
+        run: swift format lint --strict --recursive cli/Sources cli/Tests cli/Package.swift
+
+      - name: Build (warnings as errors)
+        run: swift build --package-path cli -Xswiftc -warnings-as-errors
+
+      - name: Swift tests
+        run: swift test --package-path cli
+
+  conformance:
+    name: conformance
+    runs-on: macos-26
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Conformance
+        run: npx tsx scripts/conformance.ts
