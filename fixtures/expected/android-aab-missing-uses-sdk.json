@@ -1,7 +1,7 @@
 {
   "ok": true,
   "value": {
-    "tool": { "name": "store-ready", "version": "0.9.0", "rulesVersion": "2026.10.20" },
+    "tool": { "name": "store-ready", "version": "0.9.0", "rulesVersion": "2026.10.23" },
     "asOf": "2026-10-20",
     "input": { "fileName": "android-aab-missing-uses-sdk.aab", "sizeBytes": 273, "kind": "aab" },
     "app": { "platform": "android", "id": "com.example.app", "version": "1.0", "build": "1" },
@@ -34,10 +34,17 @@
         "ruleId": "AND-TSDK-002",
         "severity": "warning",
         "confidence": "certain",
-        "title": "targetSdkVersion 1 is below 35",
-        "message": "Google Play recommends targetSdkVersion stay at least 35 to remain visible to new users.",
-        "evidence": { "targetSdkVersion": 1, "targetSdkAssumed": true },
-        "fix": ["Raise targetSdkVersion to at least 35"],
+        "title": "targetSdkVersion 1 is below 35 for phone_tablet: new users on newer Android can't install it",
+        "message": "Google Play shows an existing phone_tablet app targeting below 35 only to users whose device runs Android at or below its target API level.",
+        "evidence": {
+          "targetSdkVersion": 1,
+          "targetSdkAssumed": true,
+          "formFactor": "phone_tablet",
+          "required": 35
+        },
+        "fix": [
+          "Raise targetSdkVersion to at least the minimum for your app's form factor: 35 for phones and tablets, 34 for Wear OS, Android TV and Android XR, 32 for Android Automotive OS"
+        ],
         "sources": [
           {
             "title": "Google Play — Target API level requirements",

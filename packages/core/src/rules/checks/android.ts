@@ -57,14 +57,15 @@ function relevantNativeLibs(
   return facts.nativeLibs.libraries.filter((lib) => abis.has(lib.abi));
 }
 
-function checkAndTsdk001(
+/**
+ * The form factor (an explicit override wins over the manifest-inferred one) and the rule's
+ * `targetSdkByFormFactor` threshold for it, or undefined when the rule has none for it.
+ */
+function targetSdkRequirement(
   facts: AndroidFacts,
   rule: Rule,
-  asOf: string,
   options?: AndroidRuleCheckOptions,
-): Finding[] {
-  const target = targetSdkOf(facts);
-  if (!target || target.kind === 'preview') return [];
+): { formFactor: string; required: number } | undefined {
   const formFactor =
     options?.formFactorOverride ??
     inferFormFactor(primaryModule(facts)?.manifest.usesFeatures ?? []);
@@ -73,7 +74,20 @@ function checkAndTsdk001(
     byFormFactor && typeof byFormFactor === 'object' && !Array.isArray(byFormFactor)
       ? (byFormFactor as Record<string, unknown>)[formFactor]
       : undefined;
-  if (typeof required !== 'number' || target.value >= required) return [];
+  return typeof required === 'number' ? { formFactor, required } : undefined;
+}
+
+function checkAndTsdk001(
+  facts: AndroidFacts,
+  rule: Rule,
+  asOf: string,
+  options?: AndroidRuleCheckOptions,
+): Finding[] {
+  const target = targetSdkOf(facts);
+  if (!target || target.kind === 'preview') return [];
+  const requirement = targetSdkRequirement(facts, rule, options);
+  if (!requirement || target.value >= requirement.required) return [];
+  const { formFactor, required } = requirement;
 
   const resolved = resolveTimelineSeverity(rule.timeline, asOf);
   return [
@@ -90,25 +104,28 @@ function checkAndTsdk001(
   ];
 }
 
-function checkAndTsdk002(facts: AndroidFacts, rule: Rule, asOf: string): Finding[] {
+function checkAndTsdk002(
+  facts: AndroidFacts,
+  rule: Rule,
+  asOf: string,
+  options?: AndroidRuleCheckOptions,
+): Finding[] {
   const target = targetSdkOf(facts);
-  const minimum = rule.parameters?.minimumTargetSdk;
-  if (
-    !target ||
-    target.kind === 'preview' ||
-    typeof minimum !== 'number' ||
-    target.value >= minimum
-  ) {
-    return [];
-  }
+  if (!target || target.kind === 'preview') return [];
+  const requirement = targetSdkRequirement(facts, rule, options);
+  if (!requirement || target.value >= requirement.required) return [];
+  const { formFactor, required } = requirement;
+
   const resolved = resolveTimelineSeverity(rule.timeline, asOf);
   return [
     buildFinding(rule, resolved, {
-      title: `targetSdkVersion ${String(target.value)} is below ${String(minimum)}`,
-      message: `Google Play recommends targetSdkVersion stay at least ${String(minimum)} to remain visible to new users.`,
+      title: `targetSdkVersion ${String(target.value)} is below ${String(required)} for ${formFactor}: new users on newer Android can't install it`,
+      message: `Google Play shows an existing ${formFactor} app targeting below ${String(required)} only to users whose device runs Android at or below its target API level.`,
       evidence: {
         targetSdkVersion: target.value,
         targetSdkAssumed: primaryModule(facts)?.manifest.targetSdkAssumed ?? false,
+        formFactor,
+        required,
       },
     }),
   ];

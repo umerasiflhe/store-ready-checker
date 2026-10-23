@@ -153,3 +153,56 @@ private func loadRulesFile() -> RulesFile {
     #expect(actualPairs == expectedPairs, "[\(testCase.golden)] findings mismatch")
   }
 }
+
+private func factsWithTarget(_ target: Int, usesFeatures: [String] = []) -> AndroidFacts {
+  let manifest = ManifestFacts(
+    packageName: "com.example.app",
+    versionCode: 1,
+    versionName: "1.0",
+    minSdkVersion: 24,
+    targetSdkVersion: .released(target),
+    targetSdkAssumed: false,
+    usesFeatures: usesFeatures
+  )
+  return AndroidFacts(
+    kind: .aab,
+    modules: [ModuleFacts(name: "base", manifest: manifest)],
+    nativeLibs: NativeLibsFacts(libraries: []),
+    bundleConfig: nil
+  )
+}
+
+private func tsdk002Findings(
+  _ facts: AndroidFacts,
+  _ options: AndroidRuleCheckOptions? = nil
+) -> [Finding] {
+  evaluateAndroidRules(facts, loadRulesFile(), "2026-10-20", options)
+    .filter { $0.ruleId == "AND-TSDK-002" }
+}
+
+/// Mirrors the TS `AND-TSDK-002` per-form-factor cases in `android.test.ts`.
+@Test(arguments: [
+  ("phone_tablet", [String](), 35),
+  ("wear", ["android.hardware.type.watch"], 34),
+  ("tv", ["android.software.leanback"], 34),
+  ("automotive", ["android.hardware.type.automotive"], 32),
+])
+func andTsdk002UsesTheFormFactorMinimum(
+  formFactor: String,
+  usesFeatures: [String],
+  required: Int
+) {
+  #expect(tsdk002Findings(factsWithTarget(required, usesFeatures: usesFeatures)).isEmpty)
+  let found = tsdk002Findings(factsWithTarget(required - 1, usesFeatures: usesFeatures))
+  #expect(found.count == 1)
+  #expect(found.first?.severity == .warning)
+  #expect(found.first?.evidence["formFactor"] == .string(formFactor))
+  #expect(found.first?.evidence["required"] == .number(Double(required)))
+}
+
+@Test func andTsdk002PrefersAnExplicitFormFactorOverride() {
+  // Inferred phone/tablet needs 35; overridden to automotive, 33 is enough.
+  let facts = factsWithTarget(33)
+  #expect(tsdk002Findings(facts).count == 1)
+  #expect(tsdk002Findings(facts, AndroidRuleCheckOptions(formFactorOverride: .automotive)).isEmpty)
+}

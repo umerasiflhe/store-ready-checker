@@ -1,11 +1,11 @@
 {
   "ok": true,
   "value": {
-    "tool": { "name": "store-ready", "version": "0.9.0", "rulesVersion": "2026.10.20" },
+    "tool": { "name": "store-ready", "version": "0.9.0", "rulesVersion": "2026.10.23" },
     "asOf": "2026-10-20",
     "input": { "fileName": "android-aab-tsdk-wear.aab", "sizeBytes": 385, "kind": "aab" },
     "app": { "platform": "android", "id": "com.example.app", "version": "1.0", "build": "1" },
-    "summary": { "status": "blocked", "errors": 1, "warnings": 1, "infos": 1 },
+    "summary": { "status": "blocked", "errors": 1, "warnings": 0, "infos": 1 },
     "findings": [
       {
         "ruleId": "AND-TSDK-001",
@@ -23,21 +23,6 @@
           "Raise targetSdkVersion to meet the Play requirement for your app's form factor",
           "Test thoroughly against the new target SDK before re-uploading"
         ],
-        "sources": [
-          {
-            "title": "Google Play — Target API level requirements",
-            "url": "https://developer.android.com/google/play/requirements/target-sdk"
-          }
-        ]
-      },
-      {
-        "ruleId": "AND-TSDK-002",
-        "severity": "warning",
-        "confidence": "certain",
-        "title": "targetSdkVersion 34 is below 35",
-        "message": "Google Play recommends targetSdkVersion stay at least 35 to remain visible to new users.",
-        "evidence": { "targetSdkVersion": 34, "targetSdkAssumed": false },
-        "fix": ["Raise targetSdkVersion to at least 35"],
         "sources": [
           {
             "title": "Google Play — Target API level requirements",

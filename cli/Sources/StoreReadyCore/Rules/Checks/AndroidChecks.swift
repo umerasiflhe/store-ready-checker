@@ -47,21 +47,30 @@ private func relevantNativeLibs(_ facts: AndroidFacts, _ abis: Set<String>) -> [
   facts.nativeLibs.libraries.filter { abis.contains($0.abi) }
 }
 
+/// The form factor (an explicit override wins over the manifest-inferred one) and the rule's
+/// `targetSdkByFormFactor` threshold for it, or nil when the rule has none for it.
+private func targetSdkRequirement(
+  _ facts: AndroidFacts,
+  _ rule: Rule,
+  _ options: AndroidRuleCheckOptions?
+) -> (formFactor: FormFactor, required: Double)? {
+  let formFactor =
+    options?.formFactorOverride
+    ?? inferFormFactor(primaryModule(facts)?.manifest.usesFeatures ?? [])
+  guard case .object(let byFormFactor)? = rule.parameters?["targetSdkByFormFactor"],
+    case .number(let required)? = byFormFactor[formFactor.rawValue]
+  else { return nil }
+  return (formFactor, required)
+}
+
 private func checkAndTsdk001(
   _ facts: AndroidFacts,
   _ rule: Rule,
   _ asOf: String,
   _ options: AndroidRuleCheckOptions?
 ) -> [Finding] {
-  guard let target = targetSdkOf(facts) else { return [] }
-  if case .preview = target { return [] }
-  guard case .released(let targetValue) = target else { return [] }
-
-  let formFactor =
-    options?.formFactorOverride
-    ?? inferFormFactor(primaryModule(facts)?.manifest.usesFeatures ?? [])
-  guard case .object(let byFormFactor)? = rule.parameters?["targetSdkByFormFactor"],
-    case .number(let required)? = byFormFactor[formFactor.rawValue]
+  guard let target = targetSdkOf(facts), case .released(let targetValue) = target,
+    let (formFactor, required) = targetSdkRequirement(facts, rule, options)
   else { return [] }
   if Double(targetValue) >= required { return [] }
 
@@ -91,11 +100,10 @@ private func checkAndTsdk002(
   _ asOf: String,
   _ options: AndroidRuleCheckOptions?
 ) -> [Finding] {
-  guard let target = targetSdkOf(facts), case .released(let targetValue) = target else {
-    return []
-  }
-  guard let minimum = numberParam(rule.parameters, "minimumTargetSdk") else { return [] }
-  if Double(targetValue) >= minimum { return [] }
+  guard let target = targetSdkOf(facts), case .released(let targetValue) = target,
+    let (formFactor, required) = targetSdkRequirement(facts, rule, options)
+  else { return [] }
+  if Double(targetValue) >= required { return [] }
 
   let resolved = resolveTimelineSeverity(rule.timeline, asOf: asOf)
   return [
@@ -103,12 +111,15 @@ private func checkAndTsdk002(
       rule,
       resolved,
       FindingParts(
-        title: "targetSdkVersion \(targetValue) is below \(Int(minimum))",
+        title:
+          "targetSdkVersion \(targetValue) is below \(Int(required)) for \(formFactor.rawValue): new users on newer Android can't install it",
         message:
-          "Google Play recommends targetSdkVersion stay at least \(Int(minimum)) to remain visible to new users.",
+          "Google Play shows an existing \(formFactor.rawValue) app targeting below \(Int(required)) only to users whose device runs Android at or below its target API level.",
         evidence: [
           "targetSdkVersion": .number(Double(targetValue)),
           "targetSdkAssumed": .bool(primaryModule(facts)?.manifest.targetSdkAssumed ?? false),
+          "formFactor": .string(formFactor.rawValue),
+          "required": .number(required),
         ]
       )
     )

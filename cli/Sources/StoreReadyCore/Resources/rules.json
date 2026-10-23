@@ -1,5 +1,5 @@
 {
-  "rulesVersion": "2026.10.20",
+  "rulesVersion": "2026.10.23",
   "rules": [
     {
       "id": "IOS-SDK-001",
@@ -155,8 +155,16 @@
     {
       "id": "AND-TSDK-002",
       "platform": "android",
-      "title": "targetSdkVersion should be at least 35 to stay visible to new users",
-      "parameters": { "minimumTargetSdk": 35 },
+      "title": "targetSdkVersion should meet the per-form-factor minimum to stay available to new users",
+      "parameters": {
+        "targetSdkByFormFactor": {
+          "phone_tablet": 35,
+          "wear": 34,
+          "automotive": 32,
+          "tv": 34,
+          "xr": 34
+        }
+      },
       "timeline": [{ "from": "2026-08-31", "severity": "warning" }],
       "sources": [
         {
@@ -165,7 +173,9 @@
           "retrieved": "2026-10-20"
         }
       ],
-      "fix": ["Raise targetSdkVersion to at least 35"]
+      "fix": [
+        "Raise targetSdkVersion to at least the minimum for your app's form factor: 35 for phones and tablets, 34 for Wear OS, Android TV and Android XR, 32 for Android Automotive OS"
+      ]
     },
     {
       "id": "AND-16K-001",
