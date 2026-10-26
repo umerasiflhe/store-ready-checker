@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Web: space the "Copy as Markdown", "Download JSON" and "Check another file" row away from
   the controls above it and the findings below it.
+- Web: space the verdict banner away from the controls below it, and give the "Check as of"
+  date field and the form-factor select the same height.
 
 ## [1.0.0] - 2026-10-23
 
