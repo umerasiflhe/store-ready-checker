@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Web: space the "Copy as Markdown", "Download JSON" and "Check another file" row away from
+  the controls above it and the findings below it.
+
 ## [1.0.0] - 2026-10-23
 
 First stable release. Every rule was re-audited against its official source, and the fixes are
